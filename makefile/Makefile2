@@ -1,0 +1,5 @@
+mvcdemo: mvcdemo.cpp
+	g++.exe -Wall -g -O0 -std=c++11 mvcdemo.cpp -o mvcdemo
+	# clang++.exe -target x86_64-w64-mingw32 -Wall -g -O0 -std=c++11  mvcdemo.cpp -o mvcdemo.exe
+clean:
+	rm mvcdemo mvcdemo.ilk mvcdemo.pdb
