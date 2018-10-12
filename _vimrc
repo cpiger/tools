@@ -1,13 +1,9 @@
 " ======================================================================================
 " File         : .vimrc
-" Author       : larrupingpig@gmail.com
+" Author       : cpiger@qq.com
 " Last Change  : 
 " Description  : 
 " ======================================================================================
-"/////////////////////////////////////////////////////////////////////////////
-" basic
-"/////////////////////////////////////////////////////////////////////////////
-
 set nocompatible " be iMproved, required
 
 function! OSX()
@@ -340,7 +336,6 @@ let g:EnhCommentifyCallbackExists = 'Yes'
 " let g:syntastic_c_compiler='gcc'
 let g:syntastic_c_compiler='clang'
 " let g:syntastic_c_compiler='arm-hisiv200-linux-gcc'
-" let g:syntastic_c_compiler_options = '-Wall -Wno-unused -Wno-comment -D_GNU_SOURCE  -DHAVE_STRNCASECMP -D__KERNEL_STRICT_NAMES -D__SYS_TIME_H -DCFG_MUTECTL_SUPPORT=0x39 -ffunction-sections -fdata-sections  -fsigned-char  -DTUNER_MXL203 -DFP_TM1618A -DCFG_CMWIFI_ETH2 -DHAVE_PORTING_DEBUG -DTF_USING -DCHIP_TYPE_hi3716mv101 -DBOARD_TYPE_hi3716mdmo3bvera -DSDK_MV300A1 -I/home/yang/GCIJob/HS3716_GD_SM_SMTF/include -I/home/yang/GCIJob/HS3716_GD_SM_SMTF/include/cas -I/home/yang/GCIJob/HS3716_GD_SM_SMTF/include/gci -I/home/yang/GCIJob/HS3716_GD_SM_SMTF/SDK/MV300A1/include '
 let g:syntastic_java_javac_classpath="./:/mdata/mspace/SS01E17A/bin/classes:/opt/android-sdk/platforms/android-17/*.jar"
 let g:syntastic_java_javac_config_file_enabled=1 
 " this will make html file by Angular.js ignore errors
