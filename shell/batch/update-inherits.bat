@@ -8,7 +8,7 @@ if not exist %GAWK_CMD% (
 
 rem process
 if exist "%DEST%\tags" (
-    echo    ^|- generate %TMP%
+    echo   ^|- generate %TMP%
     %GAWK_CMD% -f "%TOOLS%\gawk\inherits.awk" "%DEST%\tags">"%TMP%"
 )
 
