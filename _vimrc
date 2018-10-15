@@ -4,8 +4,10 @@
 " Last Change  : 
 " Description  : 
 " ======================================================================================
-set nocompatible " be iMproved, required
-
+"/////////////////////////////////////////////////////////////////////////////
+" Init
+"/////////////////////////////////////////////////////////////////////////////
+set nocompatible         " Use Vim settings, rather then Vi settings (much better!). This must be first, because it changes other options as a side effect.
 function! OSX()
     return has('macunix')
 endfunction
@@ -15,58 +17,6 @@ endfunction
 function! WINDOWS()
     return  (has('win16') || has('win32') || has('win64'))
 endfunction
-
-" On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
-" across (heterogeneous) systems easier.
-if !exists('g:exvim_custom_path')
-    if WINDOWS()
-        let g:exvim_custom_path=$VIM
-        " set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
-        set runtimepath=$VIM/vimfiles
-        set runtimepath+=$VIMRUNTIME
-        set runtimepath+=$VIM/vimfiles/after
-        set runtimepath+=$HOME/.vim/after
-        set runtimepath+=$VIM/vimfiles
-        let g:ex_tools_path = g:exvim_custom_path.'/tools/'
-    endif
-endif
-" scott
-" put your own user name here
-let g:ex_usr_name = "yang"
-" let g:mapleader=","
-let g:mapleader="\<Space>"
-
-" setup back and swap directory
-set backup " make backup file and leave it around 
-" set noswf
-set undofile
-let data_dir = $HOME.'/.data/'
-let backup_dir = data_dir . 'backup' 
-let swap_dir = data_dir . 'swap' 
-let undo_dir = data_dir . 'undo' 
-
-if finddir(data_dir) == ''
-    silent call mkdir(data_dir)
-endif
-if finddir(backup_dir) == ''
-    silent call mkdir(backup_dir)
-endif
-if finddir(swap_dir) == ''
-    silent call mkdir(swap_dir)
-endif
-if finddir(undo_dir) == ''
-    silent call mkdir(undo_dir)
-endif
-set backupdir=$HOME/.data/backup " where to put backup file 
-set directory=$HOME/.data/swap " where to put swap file 
-set undodir  =$HOME/.data/undo " where to put undo file 
-" unlet data_dir
-unlet backup_dir
-unlet swap_dir
-unlet undo_dir
-"/////////////////////////////////////////////////////////////////////////////
-" General
-"/////////////////////////////////////////////////////////////////////////////
 
 " always use English menu
 " NOTE: this must before filetype off, otherwise it won't work
@@ -103,6 +53,7 @@ if WINDOWS()
         " Newer Windows files might contain utf-8 or utf-16 LE so we might
         " want to try them first.
         set fileencodings=ucs-bom,utf-8,utf-16le,cp1252,iso-8859-15
+        " set fileencodings=utf-8,gbk,gb2312,gb18030,cp936,latin1
     endif
 else
     " set default encoding to utf-8
@@ -112,481 +63,70 @@ endif
 scriptencoding utf-8
 
 if has('win32') || has('win64')
-        let &shell='cmd.exe'
+    let &shell='cmd.exe'
 endif
+
+" On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
+" across (heterogeneous) systems easier.
+if !exists('g:exvim_custom_path')
+    if WINDOWS()
+        let g:exvim_custom_path=$VIM
+        " set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+        set runtimepath=$VIM/vimfiles
+        set runtimepath+=$VIMRUNTIME
+        set runtimepath+=$VIM/vimfiles/after
+        set runtimepath+=$HOME/.vim/after
+        set runtimepath+=$VIM/vimfiles
+        let g:ex_tools_path = g:exvim_custom_path.'/tools/'
+    endif
+endif
+let g:ex_usr_name = "yang"
+" let g:mapleader=","
+let g:mapleader="\<Space>"
+
+" setup back and swap directory
+set backup " make backup file and leave it around 
+" set noswf
+set undofile
+let data_dir = $HOME.'/.data/'
+let backup_dir = data_dir . 'backup' 
+let swap_dir = data_dir . 'swap' 
+let undo_dir = data_dir . 'undo' 
+
+if finddir(data_dir) == ''
+    silent call mkdir(data_dir)
+endif
+if finddir(backup_dir) == ''
+    silent call mkdir(backup_dir)
+endif
+if finddir(swap_dir) == ''
+    silent call mkdir(swap_dir)
+endif
+if finddir(undo_dir) == ''
+    silent call mkdir(undo_dir)
+endif
+set backupdir=$HOME/.data/backup " where to put backup file 
+set directory=$HOME/.data/swap " where to put swap file 
+set undodir  =$HOME/.data/undo " where to put undo file 
+" unlet data_dir
+unlet backup_dir
+unlet swap_dir
+unlet undo_dir
 
 "/////////////////////////////////////////////////////////////////////////////
 " Bundle steup
 "/////////////////////////////////////////////////////////////////////////////
-" man.vim: invoked by :Man {name}
-" source $VIMRUNTIME/ftplugin/man.vim
-" noremap <leader>k :Man  3 <C-r>=expand('<cword>')<CR><CR>
-" noremap <s-f11> :Man  3 <C-r>=expand('<cword>')<CR><CR>
-" ---------------------------------------------------
-" ---------------------------------------------------
-" Desc: vim-colors-solarized'
-" ---------------------------------------------------
+filetype plugin indent on " required
+syntax on " required
 
-" ---------------------------------------------------
-" Desc: vim-airline : invoke by /
-" Desc: vim-airline-themes : invoke by /
-" ---------------------------------------------------
-" let g:airline_exclude_filenames = ['','11','12','13','14','15'] " see source for current list
-  " let g:airline#extensions#tabline#excludes = ['/tmp/']
-" let g:airline_exclude_filetypes = [c] " see source for current list
-let g:airline#extensions#tabline#enabled = 0
-if has('gui_running')
-    let g:airline_powerline_fonts = 1
-    let g:Powerline_cache_enabled = 1
-    let g:Powerline_symbols = 'fancy'
-    " let Powerline_symbols = 'compatible' 
-    " let g:Powerline_theme = 'skwp'
-    " let g:Powerline_colorscheme = 'default'
-else
-    let g:airline_powerline_fonts = 0
-endif
-
-let g:airline#extensions#tabline#show_buffers = 1
-let g:airline#extensions#tabline#buffer_nr_show = 1
-let g:airline#extensions#tabline#show_tab_nr = 0
-let g:airline#extensions#tabline#show_tab_type = 1
-let g:airline#extensions#tabline#fnamemod = ':t'
-
-" let g:airline#extensions#tabline#show_splits = 0
-" let airline#extensions#tabline#middle_click_preserves_windows = 1
-
-let g:airline#extensions#tabline#fnamemod = ':t'
-let g:airline#extensions#tabline#excludes = ["[fuf]","[fuf]", "__FUF__","__FUF__"]
-
-" let g:airline_section_b = "%{fnamemodify(bufname('%'),':p:.:h').'/'}"
-" let g:airline_section_c = '%t'
-
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
-
-" unicode symbols
-if WINDOWS()
-  let g:airline_left_sep = '»'
-  let g:airline_left_sep = '▶'
-  let g:airline_right_sep = '«'
-  let g:airline_right_sep = '◀'
-  let g:airline_left_sep = ''
-  let g:airline_left_alt_sep = ''
-  let g:airline_right_sep = ''
-  let g:airline_right_alt_sep = ''
-  let g:airline_symbols.paste = 'ρ'
-  let g:airline_symbols.whitespace = 'Ξ'
-  let g:airline_symbols.branch = ''
-  let g:airline_symbols.readonly = ''
-  let g:airline_symbols.linenr = ''
-endif
-if has('unix')
-    let g:airline_left_sep = '⮀'
-    let g:airline_left_alt_sep = '⮁'
-    let g:airline_right_sep = '⮂'
-    let g:airline_right_alt_sep = '⮃'
-    let g:airline_symbols.branch = '⭠'
-    let g:airline_symbols.readonly = '⭤'
-    let g:airline_symbols.linenr = '⭡'
-    let g:airline_left_sep = ''
-    let g:airline_left_alt_sep = ''
-    let g:airline_right_sep = ''
-    let g:airline_right_alt_sep = ''
-    let g:airline_symbols.branch = ''
-    let g:airline_symbols.readonly = ''
-    let g:airline_symbols.linenr = ''
-endif
-
-" let g:airline_theme="wombat"
-" let g:airline_theme="solarized"
-" let g:airline_theme="molokai"
-let g:airline_theme="powerlineish"
-" let g:airline#extensions#whitespace#checks = [ 'indent', 'trailing' ]
-let g:airline#extensions#whitespace#checks = []
-let g:airline#extensions#syntastic#enabled = 0
-
-
-" let g:airline#extensions#tabline#left_sep = ''
-" let g:airline#extensions#tabline#left_alt_sep = ''
-" let g:airline#extensions#tabline#right_sep = ''
-" let g:airline#extensions#tabline#right_alt_sep = ''
-let g:airline#extensions#tabline#left_sep = ''
-let g:airline#extensions#tabline#left_alt_sep = '|'
-
-"let g:airline_section_warning = airline#section#create(['syntastic'])
-" ---------------------------------------------------
-"  Desc:  ctrlp: invoke by <ctrl-p>
-" ---------------------------------------------------
-let g:ctrlp_working_path_mode = ''
-let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:10,results:10'
-nnoremap <unique> <leader>bs :CtrlPBuffer<CR>
-
-" ---------------------------------------------------
-"  Desc: vim-gitv: invoke most by :Gdiff
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vim-gitgutter: invoke most by :Gdiff
-" ---------------------------------------------------
-let g:gitgutter_max_signs=50000
-" ---------------------------------------------------
-"  Desc: vim-fugitive: invoke most by :Gdiff
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vim-surround: invoke when you select words and press 's'
-" ---------------------------------------------------
-" 'sb' for block
-" 'si' for an if statement
-" 'sw' for a with statement
-" 'sc' for a comment
-" 'sf' for a for statement
-" ------------------------------------------------------------------ 
-xmap s   <Plug>VSurround
-
-" DISABLE { 
-" let g:surround_{char2nr("b")} = "{% block\1 \r..*\r &\1%}\r{% endblock %}"
-" let g:surround_{char2nr("i")} = "{% if\1 \r..*\r &\1%}\r{% endif %}"
-" let g:surround_{char2nr("w")} = "{% with\1 \r..*\r &\1%}\r{% endwith %}"
-" let g:surround_{char2nr("c")} = "{% comment\1 \r..*\r &\1%}\r{% endcomment %}"
-" let g:surround_{char2nr("f")} = "{% for\1 \r..*\r &\1%}\r{% endfor %}"
-" } DISABLE end 
-" ---------------------------------------------------
-"  Desc: nerdtree: invoke by :NERDTreeToggle
-" ---------------------------------------------------
-let g:NERDTreeWinSize = 30
-let g:NERDTreeMouseMode = 1
-let g:NERDTreeMapToggleZoom = 'z' 
-"let NERDChristmasTree=1
-let NERDTreeAutoCenter=1
-" let NERDTreeBookmarksFile='~/.vim/NerdBookmarks.txt'
-let NERDTreeMouseMode=2
-let NERDTreeShowBookmarks=1
-let NERDTreeShowFiles=1
-"let NERDTreeShowHidden=1
-let NERDTreeShowLineNumbers=1
-let NERDTreeWinPos='right'
-" let NERDTreeWinSize=35
-let NERDTreeWinSize=35
-" let NERDTreeIgnore=['\.vim$', '\~$','\.dsp$','\.aps$','\.dsw$','\.opt$','\.ncb$']
-" let NERDTreeIgnore=['\.vim$', '\~$','\.dsp$','\.aps$','\.dsw$','\.opt$','\.ncb$']
-
-" Open and close the NERD_tree.vim separately
-noremap <C-F9> <ESC>:NERDTreeToggle<CR>
-noremap <S-F9> <ESC>:NERDTreeToggle<CR>:silent! call nerdtree#ui_glue#chRootCwd()<CR>
-
-" ---------------------------------------------------
-" nerdcommenter: invoke by <leader>c<space>, <leader>cl, <leader>cu, <F11> or <C-F11>
-"-----------------------------------------------------------------------------  
-let g:NERDSpaceDelims = 1
-let g:NERDRemoveExtraSpaces = 1
-let g:NERDCustomDelimiters = {
-            \ 'vimentry': { 'left': '--' },
-            \ }
-
-let g:NERDSpaceDelims = 1
-" let NERD_java_alt_style=1
-let NERDCreateDefaultMappings=0
-map <F4> <plug>NERDCommenterToggle
-map <Leader>cC <plug>NERDCommenterComment
-map <Leader>cM <plug>NERDCommenterMinimal
-map <Leader>cN <plug>NERDCommenterNested
-map <Leader>c$ <plug>NERDCommenterToEOL
-map <Leader>cI <plug>NERDCommenterInvert
-map <Leader>cS <plug>NERDCommenterSexy
-map <Leader>cy <plug>NERDCommenterYank
-map <Leader>cA <plug>NERDCommenterAppend
-map <Leader>cL <plug>NERDCommenterAlignLeft
-map <Leader>cB <plug>NERDCommenterAlignBoth
-map <Leader>cU <plug>NERDCommenterUncomment
-map <Leader>ca <plug>NERDCommenterAltDelims
-"切换 // 与  /**/
-
-let g:EnhCommentifyIdentString=''
-let g:EnhCommentifyFirstLineMode='yes'
-let g:EnhCommentifyRespectIndent='yes'
-let g:EnhCommentifyUseBlockIndent='yes'
-let g:EnhCommentifyAlignRight = 'yes'
-let g:EnhCommentifyPretty = 'yes'
-let g:EnhCommentifyBindInNormal = 'no'
-let g:EnhCommentifyBindInVisual = 'no'
-let g:EnhCommentifyBindInInsert = 'no'
-
-" ======================================================== 
-"  add new languages for comment
-" ======================================================== 
-function EnhCommentifyCallback(ft)
-    " for hlsl, swig, c
-    if a:ft =~ '^\(hlsl\|swig\|c\)$' " NOTE: we have to rewrite the c comment behavior. 
-        let b:ECcommentOpen = '//'
-        let b:ECcommentClose = ''
-    elseif a:ft == 'snippet' " for snippet
-        let b:ECcommentOpen = '#'
-        let b:ECcommentClose = ''
-    elseif a:ft == 'maxscript' " for maxscript
-        let b:ECcommentOpen = '--'
-        let b:ECcommentClose = ''
-    endif
-endfunction
-let g:EnhCommentifyCallbackExists = 'Yes'
-
-" ---------------------------------------------------
-"  Desc: syntastic: invoke when you save file and have syntac-checker
-" ------------------------------------------------------------------ 
-" let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
-" let g:syntastic_c_compiler='gcc'
-let g:syntastic_c_compiler='clang'
-" let g:syntastic_c_compiler='arm-hisiv200-linux-gcc'
-let g:syntastic_java_javac_classpath="./:/mdata/mspace/SS01E17A/bin/classes:/opt/android-sdk/platforms/android-17/*.jar"
-let g:syntastic_java_javac_config_file_enabled=1 
-" this will make html file by Angular.js ignore errors
-let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
-
-"----------------------------------------------------------------------
-"let g:syntastic_check_on_open = 1
-"" let g:syntastic_cpp_include_dirs = ['/usr/include/']
-"let g:syntastic_cpp_include_dirs = ['E:/mspace/fltkinstall/include/']
-"let g:syntastic_cpp_remove_include_errors = 1
-"let g:syntastic_cpp_check_header = 1
-"let g:syntastic_cpp_compiler = 'clang++'
-"let g:syntastic_cpp_compiler_options = '-std=c++11 -stdlib=libstdc++'
-""set error or warning signs
-"let g:syntastic_error_symbol = ''
-"let g:syntastic_warning_symbol = ''
-""whether to show balloons
-"let g:syntastic_enable_balloons = 1
-"----------------------------------------------------------------------
-
-"----------------------------------------------------------------------
-" Eclim adt
-"----------------------------------------------------------------------
-" autocmd Filetype java setlocal omnifunc=javacomplete#Complete |set omnifunc=javacomplete#Complete |set completefunc=javacomplete#CompleteParamsInf 
-" autocmd Filetype java setlocal omnifunc=javacomplete#Complete |setlocal omnifunc=javacomplete#Complete |setlocal completefunc=javacomplete#CompleteParamsInfo
-" autocmd Filetype java set completefunc=javacomplete#CompleteParamsInfo
-" autocmd Filetype java call javacomplete#StartServer()|set omnifunc=javacomplete#Complete
-" autocmd FileType java set omnifunc=javacomplete#Complete
-" let g:acp_behaviorJavaEclimLength = 1
-" function MeetsForJavaEclim(context)
-" return g:acp_behaviorJavaEclimLength >= 0 &&
-" \ a:context =~ '\k\.\k\{' . g:acp_behaviorJavaEclimLength . ',}$'
-" endfunction
-" let g:acp_behavior = {
-" \ 'java': [{
-" \ 'command': "\<c-x>\<c-u>",
-" \ 'completefunc' : 'eclim#java#complete#CodeComplete',
-" \ 'meets' : 'MeetsForJavaEclim',
-" \ }]
-" \ }
-" " nnoremap <leader>i :JavaImport<cr>
-let g:EclimProjectTreeAutoOpen=1
-noremap <C-F2> :PTreeToggle<CR>
-
-let g:adtVimAndroidPath='/opt/android-sdk/'
-let g:adtVimHtmlViewer='chromium-browser'
-
-let g:android_sdk_path="/opt/android-sdk/"
-let g:android_sdk_tags="/$HOME/AndroidTags/tags"
-" ------------------------------------------------------------------ 
-" Desc: pythoncomplete
-" ------------------------------------------------------------------ 
-" DISABLE: au FileType python set completeopt=menuone,preview
-" NOTE: the preview can show the internal document in a preview window, but I don't think it have too much help
-au FileType python set completeopt=menuone
-" ---------------------------------------------------
-"  Desc: undotree: invoke by 
-" ---------------------------------------------------
-noremap <leader>ut :UndotreeToggle<cr>
-let g:undotree_SetFocusWhenToggle=1
-let g:undotree_WindowLayout = 4
-
-" ---------------------------------------------------
-" Desc: tabular: invoke by <leader>= alignment-character
-" ---------------------------------------------------
-nnoremap <silent> <leader>= :call g:Tabular(1)<CR>
-xnoremap <silent> <leader>= :call g:Tabular(0)<CR>
-function! g:Tabular(ignore_range) range
-    let c = getchar()
-    let c = nr2char(c)
-    if a:ignore_range == 0
-        exec printf('%d,%dTabularize /%s', a:firstline, a:lastline, c)
-    else
-        exec printf('Tabularize /%s', c)
-    endif
-endfunction
-
-" ---------------------------------------------------
-"  Desc: vim-easymotion: invoke by <leader><leader> w,b,e,ge,f,F,h,i,j,k,/ 
-" ---------------------------------------------------
-map <leader><leader>/ <Plug>(easymotion-sn)
-omap <leader><leader>/ <Plug>(easymotion-tn)
-map <leader><leader>j <Plug>(easymotion-j)
-map <leader><leader>k <Plug>(easymotion-k)
-map <leader><leader>l <Plug>(easymotion-lineforward)
-map <leader><leader>h <Plug>(easymotion-linebackward)
-let g:EasyMotion_startofline = 0 " keep cursor colum when JK motion
-" ---------------------------------------------------
-
-" DISABLE: I'm using GistBox https://app.gistboxapp.com/ instead
-" " gist-vim: Invoke by :Gist
-" ---------------------------------------------------
-"  Desc: emmet-vim: invoke by 
-" ---------------------------------------------------
-" make sure emmet only enable in html,css files
-let g:user_emmet_install_global = 0
-autocmd FileType html,css EmmetInstall
-" ---------------------------------------------------
-"  Desc: vim-jsbeautify: invoke by 
-"  Desc: vim-autoformat: invoke by 
-" ---------------------------------------------------
-let g:html_indent_inctags = "html,body,head,tbody" 
-command JSBT :call JsBeautify()
-
-" ---------------------------------------------------
-" Desc: vim-indent-guides: invoke by <leader>ig
-" ---------------------------------------------------
-let g:indent_guides_guide_size = 1
-
-" ---------------------------------------------------
-"  Desc: vim-javascript: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: xml.vim: invoke by 
-" ---------------------------------------------------
-let g:javascript_plugin_jsdoc = 1
-let g:javascript_plugin_ngdoc = 1
-let g:javascript_plugin_flow = 1
-
-" ---------------------------------------------------
-"  Desc: vim-coffee-script: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: vim-css-color: invoke by 
-" DISABLE: Slow to open big css file
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: vim-less: invoke by 
-" ---------------------------------------------------
-"  
-" ---------------------------------------------------
-"  Desc: vim-stylus: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: vim-markdown: invoke by 
-" ---------------------------------------------------
-let g:vim_markdown_initial_foldlevel=9999
-
-" ---------------------------------------------------
-"  Desc: calendar.vim: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: vim-easydir: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: SudoEdit: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: tlib_vim: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: unite.vim: invoke by 
-" ---------------------------------------------------
-let g:unite_split_rule='bel'
-let g:unite_winheight=15
-
-" ---------------------------------------------------
-"  Desc: unite-quickrun_config: invoke by 
-" ---------------------------------------------------
-"
-" ---------------------------------------------------
-"  Desc: vim-addon-mw-utils: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: vim-multiple-cursors: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: vimproc.vim: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-" Desc: vim-rails: invoke by 
-" ---------------------------------------------------
-" Desc: vim-instant-markdown: invoke by 
-" ---------------------------------------------------
-" Desc: vim-ruby: invoke by 
-" ---------------------------------------------------
-" Desc: vim-go: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: vimwiki: invoke by 
-" ---------------------------------------------------
-" noremap <silent><unique> <Leader>wt <Plug>VimwikiTabGoHome
-" noremap <silent><unique> <Leader>wq <Plug>VimwikiUISelect
-" noremap <silent><unique> <Leader>ww <Plug>VimwikiGoHome
-let tlist_vimwiki_settings = 'wiki;h:Headers'
-" vimwiki file process
-au FileType vimwiki command! W call exUtility#SaveAndConvertVimwiki(0)
-au FileType vimwiki command! WA call exUtility#SaveAndConvertVimwiki(1)
-au FileType rst command! W call exUtility#SphinxMake('html')
-
-let g:vimwiki_camel_case = 0
-let g:vimwiki_hl_headers = 1
-
-" ---------------------------------------------------
-"  Desc: xmledit: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-let g:gradle_path="/opt/android-studio/gradle/gradle-2.2.1"
-
-" ---------------------------------------------------
-" silent! call repeat#set("\<Plug>MyWonderfulMap", v:count)
-
-"-----------------------------------------------------------------------------  
-" Desc: DoxyGen-Syntax        
-" Desc: DoxygenToolkit.vim    
-"-----------------------------------------------------------------------------  
-let g:DoxygenToolkit_briefTag_pre="@brief "
-let g:DoxygenToolkit_paramTag_pre="@param "
-let g:DoxygenToolkit_returnTag="@returns   "
-" let g:DoxygenToolkit_blockHeader="--------------------------------------------------------------------------"
-" let g:DoxygenToolkit_blockFooter="----------------------------------------------------------------------------"
-let g:DoxygenToolkit_authorName="yang"
-let g:DoxygenToolkit_licenseTag="license"
-
-"-----------------------------------------------------------------------------  
-" plugin -  sketck.vim
-"-----------------------------------------------------------------------------  
-noremap <C-F7> :call ToggleSketch()<CR>
-" noremap <C-F7> :DIstart<CR>
-" noremap <C-F7> :DIstop<CR>
-"-----------------------------------------------------------------------------  
-" plugin - VimFiler
-"-----------------------------------------------------------------------------  
-let g:vimfiler_as_default_explorer = 1
-" let g:vimfiler_split_rule='bel'
-" ------------------------------------------------------------------ 
-" Desc: exMacroHighlight
-" ------------------------------------------------------------------ 
-nnoremap <unique> <silent> <Leader>aa :ExmhSelectToggle<CR>
-nnoremap <unique> <silent> <Leader>ae :ExmhHL 1 <CR>
-nnoremap <unique> <silent> <Leader>ad :ExmhHL 0 <CR>
-
-autocmd! VimEnter * redraw
-autocmd GUIEnter *  redraw
-" newexvim autocmd VimEnter * silent call exUtility#CloseWindow("project_tree.exproject")
-" autocmd GUIEnter * 
-" ---------------------------------------------------
-"  Desc: ack.vim ag.vim : invoke by 
-" ---------------------------------------------------
+call plug#begin('$VIM/vimfiles/plugged')
+" ------------------------------------------------------------------
+Plug 'cpiger/a.vim'         
+" ------------------------------------------------------------------
+" Plug 'mileszs/ack.vim'
+" ------------------------------------------------------------------
+" Plug 'rking/ag.vim'
+" ------------------------------------------------------------------
 " noremap <F3> :LAck <C-r>=expand('<cword>')<CR><CR> 
 " vmap <F3> <C-C>:LAck <C-R>='"'.substitute(escape(@*,'\/'),'\n','\\n','g').'"'<CR><CR>
 " let g:ackprg = 'ag --nogroup --nocolor --column'
@@ -597,404 +137,71 @@ let g:ag_lhandler="lopen"
 " let g:ag_lhandler="belowright lopen"
 " noremap <leader>ag :LAg  <C-r>=expand('<cword>')<CR><CR>
 " noremap <F3> :LAg  <C-r>=expand('<cword>')<CR><CR>
-" ---------------------------------------------------
-" Desc: vim-neco-calc'         
-" ---------------------------------------------------
-"  
-" ---------------------------------------------------
-" Desc: neco-ghc'             
-" ---------------------------------------------------
-"  
-" ---------------------------------------------------
-" Desc: neco-look'            
-" ---------------------------------------------------
-"  
-" ---------------------------------------------------
-" Desc: context_filetype.vim'
-" ---------------------------------------------------
-"  
-" ---------------------------------------------------
-"  Desc: vim-logcat: invoke by 
-" ---------------------------------------------------
-"  
-" ---------------------------------------------------
-"  Desc: pythoncomplete.vim: invoke by 
-" ---------------------------------------------------
-"  
-" ---------------------------------------------------
-"  Desc: jedi-vim: invoke by 
-" ---------------------------------------------------
-"  
-" ---------------------------------------------------
-"  Desc: vim-escalt: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vim-expand-region: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vim-bookmarks: invoke by 
-" ---------------------------------------------------
-let g:bookmark_no_default_key_mappings=1
-  " call unite#custom#profile('source/vim_bookmarks', 'context', {
-    " \   'winheight': 13,
-    " \   'direction': 'botright',
-    " \   'start_insert': 0,
-    " \   'keep_focus': 1,
-    " \   'no_quit': 1,
-    " \ })
-" ---------------------------------------------------
-"  Desc: fencview: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vim-genutils: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vim-cpp: invoke by 
-"  Desc: vim-cpp-enhanced-highlight: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: TeTrIs: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vim-chardet: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: hexHighlight.vim: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vim-swigjs: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vimcdoc: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vim-man: invoke by 
-" ---------------------------------------------------
-map K <Nop>
-map <leader>k <Plug>(Man)
-" ---------------------------------------------------
-"  Desc: phpcomplete.vim: invoke by 
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-"  Desc: pydiction: invoke by 
-" ---------------------------------------------------
-" ---------------------------------------------------
-"  Desc: vim-easy-align: invoke by 
-" ---------------------------------------------------
-" Desc: my old plugins collection to this dir
-" autocmd FileType c,cpp setlocal equalprg=clang-format\ -style=\"{BasedOnStyle:\ WebKit,\ BraceWrapping:\ {AfterNamespace:\ true}}\"
-" LLVM, Google, Chromium, Mozilla, WebKit
-" setlocal equalprg=clang-format\ -style=\"\{BasedOnStyle:\ llvm,\ IndentWidth:\ 4\}\" 
-filetype plugin indent on " required
-syntax on " required
-
-call plug#begin('$VIM/vimfiles/plugged')
-Plug 'fedorenchik/qt-support.vim'
-" Plug 'peterhoeg/vim-qml'
-" Plug 'artoj/qmake-syntax-vim'
-Plug 'scrooloose/nerdcommenter'
-" Plug 'tpope/vim-commentary'
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-Plug 'rdnetto/YCM-Generator', {'on': 'YcmGenerateConfig'}
-Plug 'ternjs/tern_for_vim', { 'on': 'TernType' }
-"------------------------------------------------------------------------
-" Plug 'roxma/nvim-completion-manager'
-" Plug 'roxma/vim-hug-neovim-rpc'
-" 7F4
-" Plug 'vim-syntastic/syntastic'
+" ------------------------------------------------------------------
 " Plug 'w0rp/ale'
-Plug 'sheerun/vim-polyglot'
-Plug 'honza/vim-snippets'
-Plug 'sirver/ultisnips', { 'on': [] }
-Plug 'Valloric/YouCompleteMe', { 'on': [] }
-augroup load_us_ycm
-  autocmd!
-  autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
-                     \| autocmd! load_us_ycm
-augroup END
-let g:ycm_keep_logfiles = 1
-let g:ycm_log_level = 'debug'
-let g:ycm_semantic_triggers =  {
-			\ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
-			\ 'cs,lua,javascript': ['re!\w{2}'],
-			\ }
-" ---------------------------------------------------
-"  Desc: YouCompleteMe : invoke by 
-"  Desc: YCM-Generator: invoke by 
-"  Desc: ultisnips: invoke by 
-"  Desc: vim-snippets: invoke by 
-" ---------------------------------------------------
-" 默认不启动eclim
-" Plug '$VIM/vimfiles/plugged/eclim'
-" Plug '$HOME/.vim/plugged/eclim'
-" eclim会影响 vim-javascript的缩进
-let g:EclimJavascriptIndentDisabled = 1
-let g:EclimCssIndentDisabled = 1
-let g:EclimDtdIndentDisabled = 1
-let g:EclimHtmlIndentDisabled = 1
-let g:EclimXmlIndentDisabled = 1
-" ---------------------------------------------------
-"  Desc: tern_for_vim: invoke by 
-" ---------------------------------------------------
-"-----------------------------------------------------------------------------  
-let g:EclimCompletionMethod = 'omnifunc'
-" let g:EclimLogLevel = 'trace'
-
-" let g:ycm_server_python_interpreter = 'D:/python35/python.exe'
-" ji jc jd
-nnoremap <leader>gt :YcmCompleter GoTo<CR>
-nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
-nnoremap <leader>gc :YcmCompleter GoToDeclaration<CR>
-nnoremap <leader>gd :YcmCompleter GoToDefinition<CR>
-
-" nnoremap <BS> <c-o>
-nnoremap <F10> :YcmCompleter GoTo<CR>
-" let g:ycm_extra_conf_globlist = ['~/dev/*','!~/*']
-let g:ycm_global_ycm_extra_conf =$VIM.'/tools/ycmconf/tdmgcc_ycm_extra_conf.py'
-command! -complete=customlist,SetYCMParas -nargs=?  SetYCM call SetYCM(<q-args>)
-fun SetYCMParas(A,L,P)
-    let paralist = ["tdmgcc", "msys", "msvc", "qtmsvc", "qtmingw"]
-    let completelist = []
-
-    if !len(a:A)
-        return paralist
-    endif
-
-    let pat = a:A
-    for pa in paralist
-        if pa =~ pat
-            call add(completelist, pa)
-        endif
-    endfor
-    return completelist
-endfun
-
-function! SetYCM(args)
-    if a:args == ""
-        let g:ycm_global_ycm_extra_conf
-        return
-    else
-        let g:ycm_global_ycm_extra_conf =$VIM.'/tools/ycmconf/'. a:args . '_ycm_extra_conf.py'
-        YcmRestartServer
-        let g:ycm_global_ycm_extra_conf
-        return
-    endif
-endfunction
-
-" 允许 vim 加载 .ycm_extra_conf.py 文件,不再提示
-let g:ycm_confirm_extra_conf=0
-" Note that YCM's diagnostics UI is only supported for C-family languages.
-let g:ycm_show_diagnostics_ui = 1
-" 补全功能在注释中同样有效
-let g:ycm_complete_in_comments=1
-" 开启 YCM 基于标签引擎
-let g:ycm_collect_identifiers_from_tags_files=1
-let g:ycm_disable_for_files_larger_than_kb = 5000
-" 引入 C++ 标准库 tags
-" set tags+=/data/misc/software/misc./vim/stdcpp.tags
-" YCM 集成 OmniCppComplete 补全引擎,设置其快捷键
-" inoremap <leader>; <C-x><C-o>
-" 补全内容不以分割子窗口形式出现,只显示补全列表
-set completeopt-=preview
-let g:ycm_auto_trigger = 1
-" 从第一个键入字符就开始罗列匹配项
-let g:ycm_min_num_of_chars_for_completion=2
-" 禁止缓存匹配项,每次都重新生成匹配项
-let g:ycm_cache_omnifunc=0
-" 语法关键字补全
-let g:ycm_seed_identifiers_with_syntax=1
-" let g:ycm_key_invoke_completion = '<M-;>'  
-let g:ycm_key_invoke_completion = '<M-.>'  
-let g:ycm_filetype_whitelist = { '*': 1 }
-" \ 'java' : 1,
-let g:ycm_filetype_blacklist = {
-            \ 'tagbar' : 1,
-            \ 'qf' : 1,
-            \ 'notes' : 1,
-            \ 'markdown' : 1,
-            \ 'unite' : 1,
-            \ 'text' : 1,
-            \ 'vimwiki' : 1,
-            \ 'pandoc' : 1
-        \ }
-
-" -----------------------------------------------------------------------
-"  ultisnips
-" -----------------------------------------------------------------------
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-" let g:UltiSnipsExpandTrigger="<tab>"
-" let g:UltiSnipsJumpForwardTrigger="<c-b>"
-" let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-let g:UltiSnipsExpandTrigger="<a-k>"
-let g:UltiSnipsJumpForwardTrigger="<a-d>"
-let g:UltiSnipsJumpBackwardTrigger="<a-s>"
-let g:UltiSnipsListSnippets="<a-e> "
-let g:UltiSnipsUsePythonVersion = 3
-
-" If you want :UltiSnipsEdit to split your window.
-let g:UltiSnipsEditSplit="vertical"
-" let g:UltiSnipsSnippetsDir= $VIM . "/vimfiles/plugged/vim-snippets/UltiSnips"
-" ---------------------------------------------------
-" ---------------------------------------------------
-let g:snips_author = g:ex_usr_name
-fun! GetSnipsInCurrentScope()
-    let snips = {}
-    for scope in [bufnr('%')] + split(&ft, '\.') + ['_']
-        call extend(snips, get(s:snippets, scope, {}), 'keep')
-        call extend(snips, get(s:multi_snips, scope, {}), 'keep')
-    endfor
-    return snips
-endf 
-
-Plug 'mbbill/undotree', { 'on': 'UndotreeToggle'}
+" ------------------------------------------------------------------
 Plug 'skywind3000/asyncrun.vim', {'on': 'AsyncRun' }
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'Lokaltog/vim-easymotion'
-Plug 'mattn/emmet-vim'
+" ------------------------------------------------------------------
 Plug 'itchyny/calendar.vim', { 'on': 'Calendar'}
-Plug 'duggiefresh/vim-easydir'
-" let g:ultilocate_has_fuzzyfinder=1
-" Plug 'jiazhoulvke/ultilocate'
-Plug 'junegunn/fzf', {'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-
-let g:fzf_command_prefix = 'Fzf'
-let g:fzf_history_dir = data_dir.'fzf-history'
-" command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
-autocmd! FileType fzf
-autocmd  FileType fzf set laststatus=0 noshowmode noruler
-let g:fzf_layout = { 'down': '~30%' }
-  \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
-tnoremap <c-q> <c-w><c-c>
-command! -bang -nargs=* Rg 
-            \call fzf#vim#grep(
-            \'rg --column --line-number --no-heading --fixed-strings --smart-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '
-            \.shellescape(<q-args>), 1, <bang>0)
-Plug 'chrisbra/SudoEdit.vim'
-Plug 'tomtom/tlib_vim'
-Plug 'MarcWeber/vim-addon-mw-utils'
-Plug 'terryma/vim-multiple-cursors'
-Plug 'maksimr/vim-jsbeautify'
-Plug 'Chiel92/vim-autoformat'
-noremap <A-F10> :Autoformat<CR>
-let g:formatdef_allman = '"astyle --style=allman --pad-oper"'
-let g:formatters_cpp = ['allman']
-let g:formatters_c = ['allman']
-Plug 'tpope/vim-rails'
-Plug 'suan/vim-instant-markdown'
-Plug 'vim-ruby/vim-ruby'
-Plug 'fatih/vim-go'
-Plug 'fatih/vim-go-tutorial'
-Plug 'vimwiki/vimwiki'
-Plug 'sukima/xmledit'
-Plug 'vim-scripts/DoxyGen-Syntax'
-Plug 'vim-scripts/sketch.vim'
-Plug 'vim-scripts/DrawIt'
-Plug 'triglav/vim-visual-increment'
-Plug 'vim-scripts/DoxygenToolkit.vim'
-Plug 'vim-jp/vim-cpp'
-Plug 'octol/vim-cpp-enhanced-highlight'
-Plug 'asins/vimcdoc'
-" Plug 'vim-utils/vim-man'
-Plug 'shawncplus/phpcomplete.vim'
-" Plug 'python-mode/python-mode'  "case ultisnip bug
-Plug 'hdima/python-syntax'
-Plug 'altercation/vim-colors-solarized'
-Plug 'gregsexton/gitv'
-Plug 'tpope/vim-fugitive'
-
-if has ("unix")
-Plug 'airblade/vim-gitgutter' "win下慢
-endif
-Plug 'junegunn/vim-easy-align'
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-" xmap ea <Plug>(EasyAlign)
-xmap <c-e> <Plug>(EasyAlign)
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-" nmap ea <Plug>(EasyAlign)
-nmap <c-e> <Plug>(EasyAlign)
-Plug 'eagletmt/neco-ghc'
+" ------------------------------------------------------------------
 Plug 'Shougo/context_filetype.vim'
-
-Plug 'terryma/vim-expand-region'
-Plug 'MattesGroeger/vim-bookmarks'
-" Plug 'kendling/visual_studio.vim'
-Plug 'pangloss/vim-javascript'
-Plug 'othree/xml.vim'
-Plug 'kchmck/vim-coffee-script'
-" DISABLE: Slow to open big css file
-" Plug 'skammer/vim-css-color'
-Plug 'groenewege/vim-less'
-Plug 'wavded/vim-stylus'
-Plug 'plasticboy/vim-markdown'
-" Plug 'godlygeek/tabular'
-Plug 'Shougo/vimproc.vim'
-Plug 'tpope/vim-surround'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'mbbill/fencview'
-Plug 'ujihisa/neco-look'
-Plug 'vim-scripts/hexHighlight.vim'
-Plug 'vim-scripts/Pydiction'
-Plug 'vim-scripts/TeTrIs.vim'
-Plug 'taku-o/vim-chardet'
-Plug 'blockloop/vim-swigjs'
-Plug 'clones/vim-genutils'
-Plug 'thinca/vim-logcat'
-Plug 'eagle0701/vim-escalt'
-Plug 'fsouza/pythoncomplete.vim'
-
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-config'
-" ------------------------------------------------------------------ 
-
-" ------------------------------------------------------------------ 
-Plug '$VIM/vimfiles/plugged/ex-utility'
-" ------------------------------------------------------------------ 
-nnoremap <unique> <silent> <Leader>bd :EXbd<CR>:bprev<CR>
-nnoremap <unique> <silent> <C-l> :EXbn<CR>
-nnoremap <unique> <silent> <C-h> :EXbp<CR>
-" nnoremap <unique> <silent> <C-Tab> :EXbalt<CR>
-" nnoremap <unique> <silent> <Leader><Tab> :EXsw<CR>
-nnoremap <unique> <silent> <Leader><Tab> :EXbalt<CR>
-nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
-
-
-vnoremap <unique> <Leader><F10> :call ex#InsertRemoveExtend()<CR>
-" Desc: Insert '#if 0' and '#endif' between the selection
-vnoremap <unique> <S-F10> :call ex#InsertIFZero()<CR>
-nnoremap <unique> <S-F10> :call ex#RemoveIFZero()<CR>
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-aftercolors'
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-vimentry'
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-project'
-" ---------------------------------------------------
-let g:ex_project_stay_after_select = 0
-let g:ex_project_winpos='right'
-noremap <S-F12> :EXProjectToggle<CR>
-noremap <F9> :EXProjectToggle<CR>
-" noremap <C-F12> :EXProjectToggle<CR>
-nnoremap <unique> <leader>ve :call exconfig#edit_cur_vimentry ()<CR>
-hi default link ex_pj_tree_line NonText
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-gsearch'
-" ---------------------------------------------------
-let g:ex_gsearch_winsize = 15
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-tags'
-" ---------------------------------------------------
-let g:ex_tags_winsize = 15
-" DISABLE: nnoremap <unique> <leader>] :exec 'ts ' . expand('<cword>')<CR>
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-cscope'
-" ---------------------------------------------------
+" ------------------------------------------------------------------
+" Plug 'kien/ctrlp.vim'
+" ------------------------------------------------------------------
+let g:ctrlp_working_path_mode = ''
+let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:10,results:10'
+nnoremap <unique> <leader>bs :CtrlPBuffer<CR>
+" ------------------------------------------------------------------
+Plug 'cpiger/DirDiff.vim'       
+" ------------------------------------------------------------------
+" let g:DirDiffExcludes = "roc,CVS,*.lo,*.in,*.am,*.deps,*.libs,*.class,*.exe,.*.swp,.svn,*svn*,*.a,*.so,*.o,.quick_gen_project_*,.vimfiles*,*.vimentry,app-3110e"
+let g:DirDiffExcludes = "*.git,*.d,*.lst,*.obj,*.Opt,*.Uv2,*.plg,CVS,*.lo,*.cmd,*.ko,*.symvers,*.order,*.mod,*.mod.c,*.save,*.cache,*.deps,*.libs,*.class,*.exe,.*.swp,.svn,*svn*,*.a,*.so,*.o,.quick_gen_project_*,.vimfiles*,*.vimentry,app-3110e"
+let g:DirDiffIgnore = "Id:,Revision:,Date:"
+" let g:DirDiffAddArgs = "-b -w -B" 
+" let g:DirDiffAddArgs = "-b" 
+let g:DirDiffAddArgs = "-w" 
+" let g:DirDiffAddArgs = "-B" 
+" let g:DirDiffSort = 1
+" let g:DirDiffWindowSize = 14
+" let g:DirDiffIgnoreCase = 0 
+let g:DirDiffEnableMappings = 1
+" ------------------------------------------------------------------
+Plug 'vim-scripts/DoxyGen-Syntax'
+Plug 'vim-scripts/DoxygenToolkit.vim'
+" ------------------------------------------------------------------
+let g:DoxygenToolkit_briefTag_pre="@brief "
+let g:DoxygenToolkit_paramTag_pre="@param "
+let g:DoxygenToolkit_returnTag="@returns   "
+" let g:DoxygenToolkit_blockHeader="---------------------------------"
+" let g:DoxygenToolkit_blockFooter="---------------------------------"
+let g:DoxygenToolkit_authorName="cpiger"
+let g:DoxygenToolkit_licenseTag="license"
+" ------------------------------------------------------------------
+Plug 'mattn/emmet-vim'
+" ------------------------------------------------------------------
+" make sure emmet only enable in html,css files
+let g:user_emmet_install_global = 0
+autocmd FileType html,css EmmetInstall
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-aftercolors'
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-colorschemes'
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-config'
+" ------------------------------------------------------------------
+let g:ex_update_async = 1
+let g:ex_update_bwipe = 0
+nnoremap <silent><leader>up :Update<CR>
+nnoremap <silent><F6>   :Update<CR>
+" ------------------------------------------------------------------
+Plug 'exvim/ex-cref'
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-cscope'
+" ------------------------------------------------------------------
 let g:ex_cscope_winsize = 15
 let g:ex_symbol_select_cmd = 'CScopeSelect'
-" ------------------------------------------------------------------ 
-" Desc: exCscope
+" ------------------------------------------------------------------
+" Desc: ex-cscope
 " c: Find functions calling this function
 " d: Find functions called by this function
 " e: Find this egrep pattern
@@ -1003,7 +210,7 @@ let g:ex_symbol_select_cmd = 'CScopeSelect'
 " i: Find files #including this file
 " s: Find this C symbol
 " t: Find this text string  (NO NEED USE THIS FUNCTION)
-" ---------------------------------------------------------------------------------------
+" ------------------------------------------------------------------
 let g:excs_backto_editbuf = 0
 let g:excs_close_when_selected = 0
 let g:excs_window_direction = 'bel'
@@ -1018,42 +225,154 @@ nnoremap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
 nnoremap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
 nnoremap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
 nnoremap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-symbol'
-" ---------------------------------------------------
-let g:ex_symbol_select_cmd = 'TS'
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-marksbrowser'
-" ------------------------------------------------------------------ 
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-easyhl'
+" ------------------------------------------------------------------
+"  Desc:
+" ------------------------------------------------------------------
+hi ex_easyhl_cursorhl gui=none guibg=White term=none cterm=none ctermbg=white 
+hi EX_HL_label1 gui=none guibg=Green term=none cterm=none ctermbg=lightcyan
+" hi ex_easyhl1 gui=none guibg=LightCyan term=none cterm=none ctermbg=lightcyan
+hi ex_easyhl2 gui=none guibg=LightMagenta term=none cterm=none ctermbg=lightmagenta
+hi ex_easyhl3 gui=none guibg=LightRed term=none cterm=none ctermbg=lightred
+hi ex_easyhl4 gui=none guibg=LightGreen term=none cterm=none ctermbg=lightgreen
+nnoremap <unique> <silent><leader>s12 :%s/<c-r>q/<c-r>w/g<CR><c-o>
+vnoremap <unique> <silent><leader>s12  :s/<c-r>q/<c-r>w/g<CR><c-o>
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-gsearch'
+" ------------------------------------------------------------------
+let g:ex_gsearch_winsize = 15
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-hierarchy'
+" ------------------------------------------------------------------
+nnoremap <unique> <leader>hv :EXHierarchyCWord<CR>
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-mark'
+" ------------------------------------------------------------------
+nmap <unique> <a-y> <Plug>MarkSet
+xmap <unique> <a-y> <Plug>MarkSet
+nmap <unique> <Leader>R <Plug>MarkRegex
+xmap <unique> <Leader>R <Plug>MarkRegex
+nmap <unique> <A-u> <Plug>MarkClear
+
+nmap <unique> <Leader>M* <Plug>MarkSearchCurrentNext
+nmap <unique> <Leader>M# <Plug>MarkSearchCurrentPrev
+nmap <unique> <Leader>M/ <Plug>MarkSearchAnyNext
+nmap <unique> <Leader>M? <Plug>MarkSearchAnyPrev
+nmap <unique> * <Plug>MarkSearchNext
+nmap <unique> # <Plug>MarkSearchPrev
+" ------------------------------------------------------------------
+let g:mwDefaultHighlightingPalette = 'extended'
+let g:mwDefaultHighlightingPalette = 'maximum'
+" let g:mwDefaultHighlightingNum = 9
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-marksbrowser'
+" ------------------------------------------------------------------
 nnoremap <unique> <leader>ms :ExmbToggle<CR>
 nnoremap <unique> <a-m> :ExmbToggle<CR>
-
 let g:ex_mb_winsize = 15
 let g:exmb_backto_editbuf = 0
 let g:exmb_close_when_selected = 0
 let g:exmb_window_direction = 'bel'
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-matchit'
+" ------------------------------------------------------------------
+" Plug 'cpiger/ex-minibuf'
+" Plug fholgado/minibufexpl.vim
+" ------------------------------------------------------------------
+let g:miniBufExplMapCTabSwitchBufs = 1
+" nnoremap <buffer> <TAB>   :call search('\[[0-9]*:[^\]]*\]')<CR>:<BS>
+" nnoremap <buffer> <S-TAB> :call search('\[[0-9]*:[^\]]*\]','b')<CR>:<BS>
+let g:miniBufExplTabWrap = 1 " make tabs show complete (no broken on two lines) 
+let g:miniBufExplModSelTarget = 1 " If you use other explorers like TagList you can (As of 6.2.8) set it at 1:
+let g:miniBufExplUseSingleClick = 1 " If you would like to single click on tabs rather than double clicking on them to goto the selected buffer.  
+"g:miniBufExplUseSingleClick=1则导致跟vimshell patch 被输入':if bufname("%") == "-MiniBufExplorer-" <bar> call <SID>MBEClick() <bar> endif <CR>'冲突 TODO:
+" let g:miniBufExplMaxSize = 1 " <max lines: default 0> setting this to 0 will mean the window gets as big as needed to fit all your buffers. 
+let g:miniBufExplMaxSize = 1
+" let g:miniBufExplMaxSize = <max width: 0> 
+" comment out this, when we open a single file by we, we don't need minibuf opened. Minibu always open in exDev mode, in EnvironmentUpdate 
+let g:miniBufExplorerMoreThanOne = 2 " Setting this to 0 will cause the MBE window to be loaded even
 
-" ------------------------------------------------------------------ 
-Plug '$VIM/vimfiles/plugged/ex-visual_studio.vim'
-Plug '$VIM/vimfiles/plugged/ex-qfix'
-" ------------------------------------------------------------------ 
+"let g:miniBufExplForceSyntaxEnable = 1 " There is a VIM bug that can cause buffers to show up without their highlighting. The following setting will cause MBE to
+"let g:miniBufExplMapCTabSwitchBufs = 1 
+"let g:miniBufExplMapWindowNavArrows = 1
+
+function Exec_3G()
+    let aline = line(".")
+    if aline <= 2
+        exec   "normal 3G" 
+    endif 
+endfunction
+autocmd BufReadPost,BufAdd,BufCreate,BufWinEnter,WinEnter __Tag_List__  call Exec_3G()
+autocmd CursorMoved __Tag_List__  call Exec_3G()
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-project'
+" ------------------------------------------------------------------
+let g:ex_project_stay_after_select = 0
+let g:ex_project_winpos='right'
+noremap <S-F12> :EXProjectToggle<CR>
+noremap <F9> :EXProjectToggle<CR>
+" noremap <C-F12> :EXProjectToggle<CR>
+nnoremap <unique> <leader>ve :call exconfig#edit_cur_vimentry ()<CR>
+hi default link ex_pj_tree_line NonText
+Plug 'cpiger/ex-qfix'
+" ------------------------------------------------------------------
 let g:ex_qfix_winsize=15
 nnoremap <silent> <F1> :EXQFixToggle<CR>
 inoremap <silent> <F1> <ESC>:EXQFixToggle<CR>
 " nnoremap <silent> <F1> :QFix<CR>
-
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-hierarchy'
-" ---------------------------------------------------
-nnoremap <unique> <leader>hv :EXHierarchyCWord<CR>
-
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-searchcompl'
+" ------------------------------------------------------------------
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-showmarks'
+" ex-showmarks: invoke by m... or <leader>mm, <leader>ma
+" ------------------------------------------------------------------
+" Desc: ShowMarks
+"       <Leader>mt  - Toggles ShowMarks on and off.
+"       <Leader>mo  - Turns ShowMarks on, and displays marks.
+"       <Leader>mh  - Clears a mark.  or <leader>mc
+"       <Leader>ma  - Clears all marks.
+"       <Leader>mm  - Places the next available mark.
+" ------------------------------------------------------------------
+" TODO: bootleq/ShowMarks on github is well organized in code, but have lots 
+" bugs, consider merge his code and fixes the bugs 
+let g:showmarks_enable = 1
+let g:showmarks_include = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+let g:showmarks_ignore_type = 'hqm' " Ignore help, quickfix, non-modifiable buffers
+" Hilight lower & upper marks
+" Ignore help, quickfix, non-modifiable buffers
+" Hilight lower & upper marks
+let g:showmarks_textlower=">"
+" let g:showmarks_textupper="*"
+" let g:showmarks_textother="-"
+let showmarks_hlline_lower = 1
+" let showmarks_hlline_lower = 0
+let showmarks_hlline_upper = 1 
+" let showmarks_hlline_upper = 0 
+" 禁用showmark的色彩
+" hi default ShowMarksHLl ctermfg=white    ctermbg=blue   guifg=wheat    guibg=peru
+" hi default ShowMarksHLu ctermfg=darkblue ctermbg=blue   cterm=bold     guifg=blue guibg=lightblue gui=bold
+" hi default ShowMarksHLm ctermbg=Yellow   ctermfg=Black  guibg=#FFDB72  guifg=Black
+" hi default ShowMarksHLo ctermbg=Magenta  ctermfg=Black  guibg=#FFB3FF  guifg=Black 
+" 禁用showmark的色彩 for molokai 用molokai 的nomal颜色,好像不设置这4个
+" 颜色ShowMarksHLo ShowMarksHLm ShowMarksHLu ShowMarksHLl，就可以
+" hi default ShowMarksHLo ctermfg=none ctermbg=234  guibg=#272822 
+" hi default ShowMarksHLm ctermfg=none ctermbg=234  guibg=#272822
+" hi default ShowMarksHLu ctermfg=none ctermbg=234  guibg=#272822
+" hi default ShowMarksHLl ctermfg=none ctermbg=234  guibg=#272822
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-symbol'
+" ------------------------------------------------------------------
+let g:ex_symbol_select_cmd = 'TS'
+" ------------------------------------------------------------------
 " DISABLE: use tagbar instead
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-taglist'
-" Plug '$VIM/vimfiles/plugged/ex-tagbar'
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-taglist'
+" Plug 'cpiger/ex-tagbar'
 " Plug 'majutsushi/tagbar'
 " autocmd FileType tagbar setlocal nocursorline nocursorcolumn
-" ---------------------------------------------------
+" ------------------------------------------------------------------
 nnoremap <unique> <silent> <F2> :Tlist<CR>:call Exec_3G()<CR>
 nnoremap <unique> <silent> <S-F2> :Tlist<CR>:call Exec_3G()<CR>
 " nnoremap <unique> <silent> <S-F2> :TagbarToggle<CR>:call Exec_3G()<CR>
@@ -1086,7 +405,6 @@ let Tlist_Compact_Format = 1 " do not show help. Remove extra information and bl
 
 " let taglist support shader language as c-like language
 let tlist_hlsl_settings = 'c;d:macro;g:enum;s:struct;u:union;t:typedef;v:variable;f:function'
-
 
 " let g:tagbar_map_preview = '<CR>'
 let g:tagbar_map_jump = '<CR>'
@@ -1167,256 +485,40 @@ let g:tagbar_type_vimwiki = {
             \ 'sort'    : 0
             \ }
 
+Plug 'cpiger/ex-tags'
+" ------------------------------------------------------------------
+let g:ex_tags_winsize = 15
+" DISABLE: nnoremap <unique> <leader>] :exec 'ts ' . expand('<cword>')<CR>
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-utility'
+" ------------------------------------------------------------------
+nnoremap <unique> <silent> <Leader>bd :EXbd<CR>:bprev<CR>
+nnoremap <unique> <silent> <C-l> :EXbn<CR>
+nnoremap <unique> <silent> <C-h> :EXbp<CR>
+" nnoremap <unique> <silent> <C-Tab> :EXbalt<CR>
+" nnoremap <unique> <silent> <Leader><Tab> :EXsw<CR>
+nnoremap <unique> <silent> <Leader><Tab> :EXbalt<CR>
+nmap <unique> <silent> <Leader><Esc> :EXgp<CR><ESC>
 
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-showmarks'
-" ex-showmarks: invoke by m... or <leader>mm, <leader>ma
-" ------------------------------------------------------------------ 
-" Desc: ShowMarks
-"       <Leader>mt  - Toggles ShowMarks on and off.
-"       <Leader>mo  - Turns ShowMarks on, and displays marks.
-"       <Leader>mh  - Clears a mark.  or <leader>mc
-"       <Leader>ma  - Clears all marks.
-"       <Leader>mm  - Places the next available mark.
-" ------------------------------------------------------------------ 
-" TODO: bootleq/ShowMarks on github is well organized in code, but have lots 
-" bugs, consider merge his code and fixes the bugs 
-let g:showmarks_enable = 1
-let g:showmarks_include = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-let g:showmarks_ignore_type = 'hqm' " Ignore help, quickfix, non-modifiable buffers
-" Hilight lower & upper marks
-" Ignore help, quickfix, non-modifiable buffers
-" Hilight lower & upper marks
-let g:showmarks_textlower=">"
-" let g:showmarks_textupper="*"
-" let g:showmarks_textother="-"
-let showmarks_hlline_lower = 1
-" let showmarks_hlline_lower = 0
-let showmarks_hlline_upper = 1 
-" let showmarks_hlline_upper = 0 
-" 禁用showmark的色彩
-" hi default ShowMarksHLl ctermfg=white    ctermbg=blue   guifg=wheat    guibg=peru
-" hi default ShowMarksHLu ctermfg=darkblue ctermbg=blue   cterm=bold     guifg=blue guibg=lightblue gui=bold
-" hi default ShowMarksHLm ctermbg=Yellow   ctermfg=Black  guibg=#FFDB72  guifg=Black
-" hi default ShowMarksHLo ctermbg=Magenta  ctermfg=Black  guibg=#FFB3FF  guifg=Black 
-" 禁用showmark的色彩 for molokai 用molokai 的nomal颜色,好像不设置这4个
-" 颜色ShowMarksHLo ShowMarksHLm ShowMarksHLu ShowMarksHLl，就可以
-" hi default ShowMarksHLo ctermfg=none ctermbg=234  guibg=#272822 
-" hi default ShowMarksHLm ctermfg=none ctermbg=234  guibg=#272822
-" hi default ShowMarksHLu ctermfg=none ctermbg=234  guibg=#272822
-" hi default ShowMarksHLl ctermfg=none ctermbg=234  guibg=#272822
-
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-visincr'
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-matchit'
-" ---------------------------------------------------
-"  Desc:ex-matchit: invoke by %
-" ---------------------------------------------------
-"
-Plug '$VIM/vimfiles/plugged/ex-easyhl'
-" ---------------------------------------------------
-"  Desc:
-" ---------------------------------------------------
-hi ex_easyhl_cursorhl gui=none guibg=White term=none cterm=none ctermbg=white 
-hi EX_HL_label1 gui=none guibg=Green term=none cterm=none ctermbg=lightcyan
-" hi ex_easyhl1 gui=none guibg=LightCyan term=none cterm=none ctermbg=lightcyan
-hi ex_easyhl2 gui=none guibg=LightMagenta term=none cterm=none ctermbg=lightmagenta
-hi ex_easyhl3 gui=none guibg=LightRed term=none cterm=none ctermbg=lightred
-hi ex_easyhl4 gui=none guibg=LightGreen term=none cterm=none ctermbg=lightgreen
-nnoremap <unique> <silent><leader>s12 :%s/<c-r>q/<c-r>w/g<CR><c-o>
-vnoremap <unique> <silent><leader>s12  :s/<c-r>q/<c-r>w/g<CR><c-o>
-
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-searchcompl'
-" ---------------------------------------------------
-"  Desc: searchcompl: invoke by /
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-colorschemes'
-" ---------------------------------------------------
-
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-cref'
-" ex-cref: invoke by <leader>cr
-" ---------------------------------------------------
-" this is modified for default c syntax highlight settings 
-" make it don't highlight error pattern
-let c_gnu = 1
-let c_no_curly_error = 1
-let c_no_bracket_error = 1
-
-
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-typescript'
-" ---------------------------------------------------
-"
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-easygrep'      
-Plug '$VIM/vimfiles/plugged/ex-a.vim'         
-" ---------------------------------------------------
-"-----------------------------------------------------------------------------  
-" plugin -  MiniBufExplorer
-" Plug '$VIM/vimfiles/plugged/ex-minibuf'
-" Plug 'fholgado/minibufexpl.vim'
-"-----------------------------------------------------------------------------  
-Plug 'cpiger/vim-buftabline'
-"-----------------------------------------------------------------------------  
-let g:buftabline_numbers = 1
-let g:buftabline_indicators=1
-let g:buftabline_separators=0
-let g:buftabline_plug_max=20
-hi BufTabLineCurrent ctermfg=22 ctermbg=148 guifg=#005f00 guibg=#afd700
-hi BufTabLineActive  ctermfg=232 ctermbg=8 guifg=#080808 guibg=Grey50
-hi BufTabLineHidden  ctermfg=247 ctermbg=233 guifg=#9e9e9e guibg=#121212
-hi BufTabLineFill    ctermfg=247 ctermbg=233 guifg=#9e9e9e guibg=#121212
-
-nmap <leader>1 <Plug>BufTabLine.Go(1)
-nmap <leader>2 <Plug>BufTabLine.Go(2)
-nmap <leader>3 <Plug>BufTabLine.Go(3)
-nmap <leader>4 <Plug>BufTabLine.Go(4)
-nmap <leader>5 <Plug>BufTabLine.Go(5)
-nmap <leader>6 <Plug>BufTabLine.Go(6)
-nmap <leader>7 <Plug>BufTabLine.Go(7)
-nmap <leader>8 <Plug>BufTabLine.Go(8)
-nmap <leader>9 <Plug>BufTabLine.Go(9)
-nmap <leader>0 <Plug>BufTabLine.Go(10)
-
-" nnoremap <tab> <c-^>
-nnoremap <silent> <tab> :<C-U>call QuickBufferSwitch(v:count)<CR>
-let g:buftabline_excludes = ["[fuf]","[fuf]", "__FUF__","__FUF__"]
-function! QuickBufferSwitch(num)
-    let l:origBuf  = bufnr('%')
-
-    if g:buftabline_numbers == 2
-        let s:bufnr = get(buftabline#user_buffers(), a:num-1)
-        if 0 != s:bufnr
-            exec "normal " . s:bufnr . "\<C-^>"
-        endif
-    endif
-
-    if g:buftabline_numbers == 1
-    if a:num == 0
-        try
-            exec "normal " .a:num. "\<C-^>"
-        catch /^Vim\%((\a\+)\)\=:E23/
-            silent echohl ModeMsg
-            echomsg "No alternate file."
-            silent echohl None
-        endtry
-    else
-        if -1 != index(g:BufTablineList, a:num) 
-            exec "normal " .a:num. "\<C-^>"
-        else
-            silent echohl ModeMsg
-                echomsg 'Do not switch to buffer ' . (bufname(a:num) == '' ? 'number: '.a:num : 'name:'.fnamemodify(bufname(a:num), ":t")) .' .'
-            silent echohl None
-        endif
-    endif
-    endif
-endfunction  
-
-let g:miniBufExplMapCTabSwitchBufs = 1
-" nnoremap <buffer> <TAB>   :call search('\[[0-9]*:[^\]]*\]')<CR>:<BS>
-" nnoremap <buffer> <S-TAB> :call search('\[[0-9]*:[^\]]*\]','b')<CR>:<BS>
-let g:miniBufExplTabWrap = 1 " make tabs show complete (no broken on two lines) 
-let g:miniBufExplModSelTarget = 1 " If you use other explorers like TagList you can (As of 6.2.8) set it at 1:
-let g:miniBufExplUseSingleClick = 1 " If you would like to single click on tabs rather than double clicking on them to goto the selected buffer.  
-"g:miniBufExplUseSingleClick=1则导致跟vimshell patch 被输入':if bufname("%") == "-MiniBufExplorer-" <bar> call <SID>MBEClick() <bar> endif <CR>'冲突 TODO:
-" let g:miniBufExplMaxSize = 1 " <max lines: default 0> setting this to 0 will mean the window gets as big as needed to fit all your buffers. 
-let g:miniBufExplMaxSize = 1
-" let g:miniBufExplMaxSize = <max width: 0> 
-" comment out this, when we open a single file by we, we don't need minibuf opened. Minibu always open in exDev mode, in EnvironmentUpdate 
-let g:miniBufExplorerMoreThanOne = 2 " Setting this to 0 will cause the MBE window to be loaded even
-
-"let g:miniBufExplForceSyntaxEnable = 1 " There is a VIM bug that can cause buffers to show up without their highlighting. The following setting will cause MBE to
-"let g:miniBufExplMapCTabSwitchBufs = 1 
-"let g:miniBufExplMapWindowNavArrows = 1
-
-function Exec_3G()
-    let aline = line(".")
-    if aline <= 2
-     exec   "normal 3G" 
-    endif 
-endfunction
-autocmd BufReadPost,BufAdd,BufCreate,BufWinEnter,WinEnter __Tag_List__  call Exec_3G()
-autocmd CursorMoved __Tag_List__  call Exec_3G()
-
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/ex-mark'
-nmap <unique> <a-y> <Plug>MarkSet
-xmap <unique> <a-y> <Plug>MarkSet
-nmap <unique> <Leader>R <Plug>MarkRegex
-xmap <unique> <Leader>R <Plug>MarkRegex
-nmap <unique> <A-u> <Plug>MarkClear
-
-nmap <unique> <Leader>M* <Plug>MarkSearchCurrentNext
-nmap <unique> <Leader>M# <Plug>MarkSearchCurrentPrev
-nmap <unique> <Leader>M/ <Plug>MarkSearchAnyNext
-nmap <unique> <Leader>M? <Plug>MarkSearchAnyPrev
-nmap <unique> * <Plug>MarkSearchNext
-nmap <unique> # <Plug>MarkSearchPrev
-" ---------------------------------------------------
-
-let g:mwDefaultHighlightingPalette = 'extended'
-let g:mwDefaultHighlightingPalette = 'maximum'
-" let g:mwDefaultHighlightingNum = 9
-
-"-----------------------------------------------------------------------------  
-Plug '$VIM/vimfiles/plugged/ex-DirDiff'       
-" Plug 'chrisbra/vim-diff-enhanced'
-"-----------------------------------------------------------------------------  
-" let g:DirDiffExcludes = "roc,CVS,*.lo,*.in,*.am,*.deps,*.libs,*.class,*.exe,.*.swp,.svn,*svn*,*.a,*.so,*.o,.quick_gen_project_*,.vimfiles*,*.vimentry,app-3110e"
-let g:DirDiffExcludes = "*.git,*.d,*.lst,*.obj,*.Opt,*.Uv2,*.plg,CVS,*.lo,*.cmd,*.ko,*.symvers,*.order,*.mod,*.mod.c,*.save,*.cache,*.deps,*.libs,*.class,*.exe,.*.swp,.svn,*svn*,*.a,*.so,*.o,.quick_gen_project_*,.vimfiles*,*.vimentry,app-3110e"
-let g:DirDiffIgnore = "Id:,Revision:,Date:"
-" let g:DirDiffAddArgs = "-b -w -B" 
-" let g:DirDiffAddArgs = "-b" 
-let g:DirDiffAddArgs = "-w" 
-" let g:DirDiffAddArgs = "-B" 
-" let g:DirDiffSort = 1
-" let g:DirDiffWindowSize = 14
-" let g:DirDiffIgnoreCase = 0 
-let g:DirDiffEnableMappings = 1
-
-"-----------------------------------------------------------------------------  
-" plugin -  vimgdb
-" Plug '$VIM/vimfiles/plugged/vimgdb'
-" Plug '$VIM/vimfiles/plugged/vgdb-vim'
-Plug 'cpiger/NeoDebug'
-" Plug 'joonty/vdebug'
-let g:neodbg_debugger = 'gdb'
-let g:neodbg_ballonshow_with_print = 0
-let g:neodbg_debuginfo = 0
-map <silent> <C-F5> :NeoDebug<cr>
-" ca gdb VGdb
-" ca Gdb VGdb
-" let g:vgdb_uselibcall=1
-" nmap <silent> <C-F5> :VGdb<cr>
-" noremap <silent> <F5> <ESC>
-"-----------------------------------------------------------------------------  
-noremap <silent> <S-F8> :bel 56vsplit gdbvars<CR>:setlocal nobuflisted<CR>:wincmd h<CR>
-
-" ---------------------------------------------------
-Plug '$VIM/vimfiles/plugged/zencoding-vim'
-" ---------------------------------------------------
-" let g:user_zen_leader_key = '<c-j>'
-
-" Plug '$VIM/vimfiles/plugged/L9'                   
+vnoremap <unique> <Leader><F10> :call ex#InsertRemoveExtend()<CR>
+" Desc: Insert '#if 0' and '#endif' between the selection
+vnoremap <unique> <S-F10> :call ex#InsertIFZero()<CR>
+nnoremap <unique> <S-F10> :call ex#RemoveIFZero()<CR>
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-vimentry'
+" ------------------------------------------------------------------
+Plug 'cpiger/ex-visincr'
+" ------------------------------------------------------------------
+Plug 'mbbill/fencview'
+" ------------------------------------------------------------------
+let g:fencview_autodetect = 0    "会导致<leader>gg 出问题？
+" ------------------------------------------------------------------
 Plug 'cpiger/vim-l9'
-" ------------------------------------------------------------------ 
-" Plug '$VIM/vimfiles/plugged/fuzzyfinder'
 Plug 'cpiger/FuzzyFinder'
-" ------------------------------------------------------------------ 
-" plugin - FuzzyFinder  
-" mru.vim   废弃，由fuf代替
-" ------------------------------------------------------------------ 
+" ------------------------------------------------------------------
 "noremap <F3> :MRU<cR>
 "let MRU_Max_Entries =200 
 "let MRU_Auto_Close = 0 
-
 function GotoMainEditBuffer()
     if &modifiable
         return
@@ -1502,10 +604,684 @@ command! -nargs=* -complete=file FufTaggedFileExVim call FufTaggedFile_exVim(<q-
 nnoremap <silent><leader>tf :FufTaggedFileExVim<cr>
 nnoremap <silent><C-F8> :FufTaggedFileExVim <c-r>=expand('<cfile>')<cr><cr>
 nnoremap <silent><A-F> :FufTaggedFileExVim<cr>
+" ------------------------------------------------------------------
+Plug 'junegunn/fzf', {'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
-Plug 'tpope/vim-repeat'
+let g:fzf_command_prefix = 'Fzf'
+let g:fzf_history_dir = data_dir.'fzf-history'
+" command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
+autocmd! FileType fzf
+autocmd  FileType fzf set laststatus=0 noshowmode noruler
+let g:fzf_layout = { 'down': '~30%' }
+            \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+tnoremap <c-q> <c-w><c-c>
+command! -bang -nargs=* Rg 
+            \call fzf#vim#grep(
+            \'rg --column --line-number --no-heading --fixed-strings --smart-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '
+            \.shellescape(<q-args>), 1, <bang>0)
+" ------------------------------------------------------------------
+Plug 'gregsexton/gitv'
+" ------------------------------------------------------------------
+Plug 'vim-scripts/hexHighlight.vim'
+" ------------------------------------------------------------------
+" ------------------------------------------------------------------
+"Plug 'davidhalter/jedi-vim'
+" ------------------------------------------------------------------
+" Plug itchyny/lightline.vim
+" ------------------------------------------------------------------
+Plug 'eagletmt/neco-ghc'
+" ------------------------------------------------------------------
+Plug 'ujihisa/neco-look'
+" ------------------------------------------------------------------
+Plug 'Shougo/neocomplete.vim'
+"------------------------------------------------------------------  
+" Plug 'cpiger/vgdb-vim'
+Plug 'cpiger/NeoDebug'
+let g:neodbg_debugger = 'gdb'
+let g:neodbg_ballonshow_with_print = 0
+let g:neodbg_debuginfo = 0
+map <silent> <C-F5> :NeoDebug<cr>
+" ca gdb VGdb
+" ca Gdb VGdb
+" let g:vgdb_uselibcall=1
+" nmap <silent> <C-F5> :VGdb<cr>
+" noremap <silent> <F5> <ESC>
+"------------------------------------------------------------------  
+noremap <silent> <S-F8> :bel 56vsplit gdbvars<CR>:setlocal nobuflisted<CR>:wincmd h<CR>
+" ------------------------------------------------------------------
 Plug 'neomake/neomake'
+" ------------------------------------------------------------------
+Plug 'scrooloose/nerdcommenter'
+" Plug 'tpope/vim-commentary'
+" ------------------------------------------------------------------
+let g:NERDSpaceDelims = 1
+let g:NERDRemoveExtraSpaces = 1
+let g:NERDCustomDelimiters = {
+            \ 'vimentry': { 'left': '--' },
+            \ }
 
+let g:NERDSpaceDelims = 1
+" let NERD_java_alt_style=1
+let NERDCreateDefaultMappings=0
+map <F4> <plug>NERDCommenterToggle
+map <Leader>cC <plug>NERDCommenterComment
+map <Leader>cM <plug>NERDCommenterMinimal
+map <Leader>cN <plug>NERDCommenterNested
+map <Leader>c$ <plug>NERDCommenterToEOL
+map <Leader>cI <plug>NERDCommenterInvert
+map <Leader>cS <plug>NERDCommenterSexy
+map <Leader>cy <plug>NERDCommenterYank
+map <Leader>cA <plug>NERDCommenterAppend
+map <Leader>cL <plug>NERDCommenterAlignLeft
+map <Leader>cB <plug>NERDCommenterAlignBoth
+map <Leader>cU <plug>NERDCommenterUncomment
+map <Leader>ca <plug>NERDCommenterAltDelims
+"切换 // 与  /**/
+let g:EnhCommentifyIdentString=''
+let g:EnhCommentifyFirstLineMode='yes'
+let g:EnhCommentifyRespectIndent='yes'
+let g:EnhCommentifyUseBlockIndent='yes'
+let g:EnhCommentifyAlignRight = 'yes'
+let g:EnhCommentifyPretty = 'yes'
+let g:EnhCommentifyBindInNormal = 'no'
+let g:EnhCommentifyBindInVisual = 'no'
+let g:EnhCommentifyBindInInsert = 'no'
+" ======================================================== 
+"  add new languages for comment
+" ======================================================== 
+function EnhCommentifyCallback(ft)
+    " for hlsl, swig, c
+    if a:ft =~ '^\(hlsl\|swig\|c\)$' " NOTE: we have to rewrite the c comment behavior. 
+        let b:ECcommentOpen = '//'
+        let b:ECcommentClose = ''
+    elseif a:ft == 'snippet' " for snippet
+        let b:ECcommentOpen = '#'
+        let b:ECcommentClose = ''
+    elseif a:ft == 'maxscript' " for maxscript
+        let b:ECcommentOpen = '--'
+        let b:ECcommentClose = ''
+    endif
+endfunction
+let g:EnhCommentifyCallbackExists = 'Yes'
+" ------------------------------------------------------------------
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+" ------------------------------------------------------------------
+let g:NERDTreeWinSize = 30
+let g:NERDTreeMouseMode = 1
+let g:NERDTreeMapToggleZoom = 'z' 
+"let NERDChristmasTree=1
+let NERDTreeAutoCenter=1
+" let NERDTreeBookmarksFile='~/.vim/NerdBookmarks.txt'
+let NERDTreeMouseMode=2
+let NERDTreeShowBookmarks=1
+let NERDTreeShowFiles=1
+"let NERDTreeShowHidden=1
+let NERDTreeShowLineNumbers=1
+let NERDTreeWinPos='right'
+" let NERDTreeWinSize=35
+let NERDTreeWinSize=35
+" let NERDTreeIgnore=['\.vim$', '\~$','\.dsp$','\.aps$','\.dsw$','\.opt$','\.ncb$']
+" let NERDTreeIgnore=['\.vim$', '\~$','\.dsp$','\.aps$','\.dsw$','\.opt$','\.ncb$']
+
+" Open and close the NERD_tree.vim separately
+noremap <C-F9> <ESC>:NERDTreeToggle<CR>
+noremap <S-F9> <ESC>:NERDTreeToggle<CR>:silent! call nerdtree#ui_glue#chRootCwd()<CR>
+" ------------------------------------------------------------------
+" Plug 'roxma/nvim-completion-manager'
+" ------------------------------------------------------------------
+Plug 'shawncplus/phpcomplete.vim'
+" ------------------------------------------------------------------
+Plug 'vim-scripts/Pydiction'
+" ------------------------------------------------------------------
+Plug 'fsouza/pythoncomplete.vim'
+" ------------------------------------------------------------------
+" DISABLE: au FileType python set completeopt=menuone,preview
+" NOTE: the preview can show the internal document in a preview window, but I don't think it have too much help
+au FileType python set completeopt=menuone
+" ------------------------------------------------------------------
+" Plug 'python-mode/python-mode'  "case ultisnip bug
+" ------------------------------------------------------------------
+Plug 'hdima/python-syntax'
+" ------------------------------------------------------------------
+" Plug 'artoj/qmake-syntax-vim'
+" ------------------------------------------------------------------
+Plug 'fedorenchik/qt-support.vim'
+" ------------------------------------------------------------------
+Plug 'vim-scripts/sketch.vim'
+" ------------------------------------------------------------------
+noremap <C-F7> :call ToggleSketch()<CR>
+" ------------------------------------------------------------------
+Plug 'vim-scripts/DrawIt'
+" ------------------------------------------------------------------
+" noremap <C-F7> :DIstart<CR>
+" noremap <C-F7> :DIstop<CR>
+" ------------------------------------------------------------------
+Plug 'chrisbra/SudoEdit.vim'
+" ------------------------------------------------------------------
+" Plug 'vim-syntastic/syntastic'
+" ------------------------------------------------------------------
+" let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
+" let g:syntastic_c_compiler='gcc'
+let g:syntastic_c_compiler='clang'
+" let g:syntastic_c_compiler='arm-hisiv200-linux-gcc'
+" let g:syntastic_c_compiler_options = '-Wall -Wno-unused -Wno-comment -D_GNU_SOURCE  -DHAVE_STRNCASECMP -D__KERNEL_STRICT_NAMES -D__SYS_TIME_H -DCFG_MUTECTL_SUPPORT=0x39 -ffunction-sections -fdata-sections  -fsigned-char  -DTUNER_MXL203 -DFP_TM1618A -DCFG_CMWIFI_ETH2 -DHAVE_PORTING_DEBUG -DTF_USING -DCHIP_TYPE_hi3716mv101 -DBOARD_TYPE_hi3716mdmo3bvera -DSDK_MV300A1 -I/home/yang/GCIJob/HS3716_GD_SM_SMTF/include -I/home/yang/GCIJob/HS3716_GD_SM_SMTF/include/cas -I/home/yang/GCIJob/HS3716_GD_SM_SMTF/include/gci -I/home/yang/GCIJob/HS3716_GD_SM_SMTF/SDK/MV300A1/include '
+let g:syntastic_java_javac_classpath="./:/mdata/mspace/SS01E17A/bin/classes:/opt/android-sdk/platforms/android-17/*.jar"
+let g:syntastic_java_javac_config_file_enabled=1 
+" this will make html file by Angular.js ignore errors
+let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
+" ------------------------------------------------------------------
+"let g:syntastic_check_on_open = 1
+"" let g:syntastic_cpp_include_dirs = ['/usr/include/']
+"let g:syntastic_cpp_include_dirs = ['E:/mspace/fltkinstall/include/']
+"let g:syntastic_cpp_remove_include_errors = 1
+"let g:syntastic_cpp_check_header = 1
+"let g:syntastic_cpp_compiler = 'clang++'
+"let g:syntastic_cpp_compiler_options = '-std=c++11 -stdlib=libstdc++'
+""set error or warning signs
+"let g:syntastic_error_symbol = ''
+"let g:syntastic_warning_symbol = ''
+""whether to show balloons
+"let g:syntastic_enable_balloons = 1
+" ------------------------------------------------------------------
+" Plug 'godlygeek/tabular'
+" ------------------------------------------------------------------
+" let g:tabular_loaded = 1
+nnoremap <silent> <leader>= :call g:Tabular(1)<CR>
+xnoremap <silent> <leader>= :call g:Tabular(0)<CR>
+function! g:Tabular(ignore_range) range
+    let c = getchar()
+    let c = nr2char(c)
+    if a:ignore_range == 0
+        exec printf('%d,%dTabularize /%s', a:firstline, a:lastline, c)
+    else
+        exec printf('Tabularize /%s', c)
+    endif
+endfunction
+" ------------------------------------------------------------------
+Plug 'ternjs/tern_for_vim', { 'on': 'TernType' }
+" ------------------------------------------------------------------
+Plug 'vim-scripts/TeTrIs.vim'
+" ------------------------------------------------------------------
+Plug 'tomtom/tlib_vim'
+" ------------------------------------------------------------------
+" Plug 'jiazhoulvke/ultilocate'
+" let g:ultilocate_has_fuzzyfinder=1
+" ------------------------------------------------------------------
+Plug 'mbbill/undotree', { 'on': 'UndotreeToggle'}
+" ------------------------------------------------------------------
+noremap <leader>ut :UndotreeToggle<cr>
+let g:undotree_SetFocusWhenToggle=1
+let g:undotree_WindowLayout = 4
+" ------------------------------------------------------------------
+" Plug 'Shougo/unite.vim'
+" ------------------------------------------------------------------
+let g:unite_split_rule='bel'
+let g:unite_winheight=15
+" ------------------------------------------------------------------
+" Plug 'osyo-manga/unite-quickrun_config'
+" ------------------------------------------------------------------
+" Plug 'joonty/vdebug'
+" ------------------------------------------------------------------
+Plug 'MarcWeber/vim-addon-mw-utils'
+" ------------------------------------------------------------------
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+" ------------------------------------------------------------------
+" let g:airline_exclude_filenames = ['','11','12','13','14','15'] " see source for current list
+" let g:airline#extensions#tabline#excludes = ['/tmp/']
+" let g:airline_exclude_filetypes = [c] " see source for current list
+let g:airline#extensions#tabline#enabled = 0
+if has('gui_running')
+    let g:airline_powerline_fonts = 1
+    let g:Powerline_cache_enabled = 1
+    let g:Powerline_symbols = 'fancy'
+    " let Powerline_symbols = 'compatible' 
+    " let g:Powerline_theme = 'skwp'
+    " let g:Powerline_colorscheme = 'default'
+else
+    let g:airline_powerline_fonts = 0
+endif
+
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#tabline#show_tab_nr = 0
+let g:airline#extensions#tabline#show_tab_type = 1
+let g:airline#extensions#tabline#fnamemod = ':t'
+
+" let g:airline#extensions#tabline#show_splits = 0
+" let airline#extensions#tabline#middle_click_preserves_windows = 1
+
+let g:airline#extensions#tabline#fnamemod = ':t'
+let g:airline#extensions#tabline#excludes = ["[fuf]","[fuf]", "__FUF__","__FUF__"]
+
+" let g:airline_section_b = "%{fnamemodify(bufname('%'),':p:.:h').'/'}"
+" let g:airline_section_c = '%t'
+
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+" unicode symbols
+if WINDOWS()
+    let g:airline_left_sep = '»'
+    let g:airline_left_sep = '▶'
+    let g:airline_right_sep = '«'
+    let g:airline_right_sep = '◀'
+    let g:airline_left_sep = ''
+    let g:airline_left_alt_sep = ''
+    let g:airline_right_sep = ''
+    let g:airline_right_alt_sep = ''
+    let g:airline_symbols.paste = 'ρ'
+    let g:airline_symbols.whitespace = 'Ξ'
+    let g:airline_symbols.branch = ''
+    let g:airline_symbols.readonly = ''
+    let g:airline_symbols.linenr = ''
+endif
+if has('unix')
+    let g:airline_left_sep = '⮀'
+    let g:airline_left_alt_sep = '⮁'
+    let g:airline_right_sep = '⮂'
+    let g:airline_right_alt_sep = '⮃'
+    let g:airline_symbols.branch = '⭠'
+    let g:airline_symbols.readonly = '⭤'
+    let g:airline_symbols.linenr = '⭡'
+    let g:airline_left_sep = ''
+    let g:airline_left_alt_sep = ''
+    let g:airline_right_sep = ''
+    let g:airline_right_alt_sep = ''
+    let g:airline_symbols.branch = ''
+    let g:airline_symbols.readonly = ''
+    let g:airline_symbols.linenr = ''
+endif
+
+" let g:airline_theme="wombat"
+" let g:airline_theme="solarized"
+" let g:airline_theme="molokai"
+let g:airline_theme="powerlineish"
+" let g:airline#extensions#whitespace#checks = [ 'indent', 'trailing' ]
+let g:airline#extensions#whitespace#checks = []
+let g:airline#extensions#syntastic#enabled = 0
+
+" let g:airline#extensions#tabline#left_sep = ''
+" let g:airline#extensions#tabline#left_alt_sep = ''
+" let g:airline#extensions#tabline#right_sep = ''
+" let g:airline#extensions#tabline#right_alt_sep = ''
+let g:airline#extensions#tabline#left_sep = ''
+let g:airline#extensions#tabline#left_alt_sep = '|'
+
+"let g:airline_section_warning = airline#section#create(['syntastic'])
+" ------------------------------------------------------------------
+Plug 'Chiel92/vim-autoformat'
+noremap <A-F10> :Autoformat<CR>
+let g:formatdef_allman = '"astyle --style=allman --pad-oper"'
+let g:formatters_cpp = ['allman']
+let g:formatters_c = ['allman']
+" autocmd FileType c,cpp setlocal equalprg=clang-format\ -style=\"{BasedOnStyle:\ WebKit,\ BraceWrapping:\ {AfterNamespace:\ true}}\"
+" LLVM, Google, Chromium, Mozilla, WebKit
+" setlocal equalprg=clang-format\ -style=\"\{BasedOnStyle:\ llvm,\ IndentWidth:\ 4\}\" 
+" ------------------------------------------------------------------
+Plug 'MattesGroeger/vim-bookmarks'
+" ------------------------------------------------------------------
+let g:bookmark_no_default_key_mappings=1
+" call unite#custom#profile('source/vim_bookmarks', 'context', {
+" \   'winheight': 13,
+" \   'direction': 'botright',
+" \   'start_insert': 0,
+" \   'keep_focus': 1,
+" \   'no_quit': 1,
+" \ })
+" ------------------------------------------------------------------
+Plug 'cpiger/vim-buftabline'
+"------------------------------------------------------------------  
+let g:buftabline_numbers = 1
+let g:buftabline_indicators=1
+let g:buftabline_separators=0
+let g:buftabline_plug_max=20
+hi BufTabLineCurrent ctermfg=22 ctermbg=148 guifg=#005f00 guibg=#afd700
+hi BufTabLineActive  ctermfg=232 ctermbg=8 guifg=#080808 guibg=Grey50
+hi BufTabLineHidden  ctermfg=247 ctermbg=233 guifg=#9e9e9e guibg=#121212
+hi BufTabLineFill    ctermfg=247 ctermbg=233 guifg=#9e9e9e guibg=#121212
+
+nmap <leader>1 <Plug>BufTabLine.Go(1)
+nmap <leader>2 <Plug>BufTabLine.Go(2)
+nmap <leader>3 <Plug>BufTabLine.Go(3)
+nmap <leader>4 <Plug>BufTabLine.Go(4)
+nmap <leader>5 <Plug>BufTabLine.Go(5)
+nmap <leader>6 <Plug>BufTabLine.Go(6)
+nmap <leader>7 <Plug>BufTabLine.Go(7)
+nmap <leader>8 <Plug>BufTabLine.Go(8)
+nmap <leader>9 <Plug>BufTabLine.Go(9)
+nmap <leader>0 <Plug>BufTabLine.Go(10)
+
+" nnoremap <tab> <c-^>
+nnoremap <silent> <tab> :<C-U>call QuickBufferSwitch(v:count)<CR>
+let g:buftabline_excludes = ["[fuf]","[fuf]", "__FUF__","__FUF__"]
+function! QuickBufferSwitch(num)
+    let l:origBuf  = bufnr('%')
+
+    if g:buftabline_numbers == 2
+        let s:bufnr = get(buftabline#user_buffers(), a:num-1)
+        if 0 != s:bufnr
+            exec "normal " . s:bufnr . "\<C-^>"
+        endif
+    endif
+
+    if g:buftabline_numbers == 1
+        if a:num == 0
+            try
+                exec "normal " .a:num. "\<C-^>"
+            catch /^Vim\%((\a\+)\)\=:E23/
+                silent echohl ModeMsg
+                echomsg "No alternate file."
+                silent echohl None
+            endtry
+        else
+            if -1 != index(g:BufTablineList, a:num) 
+                exec "normal " .a:num. "\<C-^>"
+            else
+                silent echohl ModeMsg
+                echomsg 'Do not switch to buffer ' . (bufname(a:num) == '' ? 'number: '.a:num : 'name:'.fnamemodify(bufname(a:num), ":t")) .' .'
+                silent echohl None
+            endif
+        endif
+    endif
+endfunction  
+" ------------------------------------------------------------------
+Plug 'asins/vimcdoc'
+" ------------------------------------------------------------------
+Plug 'taku-o/vim-chardet'
+" ------------------------------------------------------------------
+Plug 'kchmck/vim-coffee-script'
+" ------------------------------------------------------------------
+Plug 'altercation/vim-colors-solarized'
+" ------------------------------------------------------------------
+Plug 'vim-jp/vim-cpp'
+Plug 'octol/vim-cpp-enhanced-highlight'
+" ------------------------------------------------------------------
+" Plug 'skammer/vim-css-color'
+" ------------------------------------------------------------------
+" Plug 'chrisbra/vim-diff-enhanced'
+" ------------------------------------------------------------------
+Plug 'junegunn/vim-easy-align'
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+" xmap ea <Plug>(EasyAlign)
+xmap <c-e> <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+" nmap ea <Plug>(EasyAlign)
+nmap <c-e> <Plug>(EasyAlign)
+" ------------------------------------------------------------------
+Plug 'duggiefresh/vim-easydir'
+" ------------------------------------------------------------------
+Plug 'cpiger/vim-easygrep'      
+" ------------------------------------------------------------------
+Plug 'Lokaltog/vim-easymotion'
+" ------------------------------------------------------------------
+map <leader><leader>/ <Plug>(easymotion-sn)
+omap <leader><leader>/ <Plug>(easymotion-tn)
+map <leader><leader>j <Plug>(easymotion-j)
+map <leader><leader>k <Plug>(easymotion-k)
+map <leader><leader>l <Plug>(easymotion-lineforward)
+map <leader><leader>h <Plug>(easymotion-linebackward)
+let g:EasyMotion_startofline = 0 " keep cursor colum when JK motion
+" ------------------------------------------------------------------
+Plug 'eagle0701/vim-escalt'
+" ------------------------------------------------------------------
+Plug 'terryma/vim-expand-region'
+" ------------------------------------------------------------------
+Plug 'tpope/vim-fugitive'
+" ------------------------------------------------------------------
+Plug 'clones/vim-genutils'
+" ------------------------------------------------------------------
+if has ("unix")
+    Plug 'airblade/vim-gitgutter' "win下慢
+endif
+" ------------------------------------------------------------------
+let g:gitgutter_max_signs=50000
+" ------------------------------------------------------------------
+Plug 'fatih/vim-go'
+Plug 'fatih/vim-go-tutorial'
+" ------------------------------------------------------------------
+" Plug 'roxma/vim-hug-neovim-rpc'
+" ------------------------------------------------------------------
+Plug 'nathanaelkane/vim-indent-guides'
+" ------------------------------------------------------------------
+let g:indent_guides_guide_size = 1
+" ------------------------------------------------------------------
+Plug 'suan/vim-instant-markdown'
+" ------------------------------------------------------------------
+Plug 'pangloss/vim-javascript'
+" ------------------------------------------------------------------
+Plug 'maksimr/vim-jsbeautify'
+" ------------------------------------------------------------------
+let g:html_indent_inctags = "html,body,head,tbody" 
+command JSBT :call JsBeautify()
+" ------------------------------------------------------------------
+Plug 'groenewege/vim-less'
+" ------------------------------------------------------------------
+Plug 'thinca/vim-logcat'
+" ------------------------------------------------------------------
+" Plug 'vim-utils/vim-man'
+" ------------------------------------------------------------------
+map K <Nop>
+map <leader>k <Plug>(Man)
+" man.vim: invoked by :Man {name}
+" source $VIMRUNTIME/ftplugin/man.vim
+" noremap <leader>k :Man  3 <C-r>=expand('<cword>')<CR><CR>
+" noremap <s-f11> :Man  3 <C-r>=expand('<cword>')<CR><CR>
+" ------------------------------------------------------------------
+Plug 'plasticboy/vim-markdown'
+" ------------------------------------------------------------------
+let g:vim_markdown_initial_foldlevel=9999
+" ------------------------------------------------------------------
+Plug 'terryma/vim-multiple-cursors'
+" ------------------------------------------------------------------
+Plug 'sheerun/vim-polyglot'
+" ------------------------------------------------------------------
+Plug 'Shougo/vimproc.vim'
+" ------------------------------------------------------------------
+" Plug 'peterhoeg/vim-qml'
+" ------------------------------------------------------------------
+Plug 'tpope/vim-rails'
+" ------------------------------------------------------------------
+Plug 'tpope/vim-repeat'
+" ------------------------------------------------------------------
+Plug 'vim-ruby/vim-ruby'
+" ------------------------------------------------------------------
+Plug 'wavded/vim-stylus'
+" ------------------------------------------------------------------
+Plug 'tpope/vim-surround'
+" ------------------------------------------------------------------
+" 'sb' for block
+" 'si' for an if statement
+" 'sw' for a with statement
+" 'sc' for a comment
+" 'sf' for a for statement
+" ------------------------------------------------------------------
+xmap s   <Plug>VSurround
+
+" DISABLE { 
+" let g:surround_{char2nr("b")} = "{% block\1 \r..*\r &\1%}\r{% endblock %}"
+" let g:surround_{char2nr("i")} = "{% if\1 \r..*\r &\1%}\r{% endif %}"
+" let g:surround_{char2nr("w")} = "{% with\1 \r..*\r &\1%}\r{% endwith %}"
+" let g:surround_{char2nr("c")} = "{% comment\1 \r..*\r &\1%}\r{% endcomment %}"
+" let g:surround_{char2nr("f")} = "{% for\1 \r..*\r &\1%}\r{% endfor %}"
+" } DISABLE end 
+" ------------------------------------------------------------------
+Plug 'blockloop/vim-swigjs'
+" ------------------------------------------------------------------
+Plug 'triglav/vim-visual-increment'
+" ------------------------------------------------------------------
+Plug 'vimwiki/vimwiki'
+" ------------------------------------------------------------------
+" noremap <silent><unique> <Leader>wt <Plug>VimwikiTabGoHome
+" noremap <silent><unique> <Leader>wq <Plug>VimwikiUISelect
+" noremap <silent><unique> <Leader>ww <Plug>VimwikiGoHome
+let tlist_vimwiki_settings = 'wiki;h:Headers'
+" vimwiki file process
+au FileType vimwiki command! W call exUtility#SaveAndConvertVimwiki(0)
+au FileType vimwiki command! WA call exUtility#SaveAndConvertVimwiki(1)
+au FileType rst command! W call exUtility#SphinxMake('html')
+
+let g:vimwiki_camel_case = 0
+let g:vimwiki_hl_headers = 1
+" ------------------------------------------------------------------
+Plug 'cpiger/visual_studio.vim'
+" ------------------------------------------------------------------
+Plug 'othree/xml.vim'
+" ------------------------------------------------------------------
+let g:javascript_plugin_jsdoc = 1
+let g:javascript_plugin_ngdoc = 1
+let g:javascript_plugin_flow = 1
+" ------------------------------------------------------------------
+Plug 'sukima/xmledit'
+" ------------------------------------------------------------------
+"  Desc: YouCompleteMe : invoke by 
+"  Desc: YCM-Generator: invoke by 
+"  Desc: ultisnips: invoke by 
+"  Desc: vim-snippets: invoke by 
+" ------------------------------------------------------------------
+Plug 'sirver/ultisnips', { 'on': [] }
+" ------------------------------------------------------------------
+Plug 'rdnetto/YCM-Generator', {'on': 'YcmGenerateConfig'}
+" ------------------------------------------------------------------
+Plug 'honza/vim-snippets'
+" ------------------------------------------------------------------
+Plug 'Valloric/YouCompleteMe', { 'on': [] }
+" ------------------------------------------------------------------
+augroup load_us_ycm
+    autocmd!
+    autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
+                \| autocmd! load_us_ycm
+augroup END
+let g:ycm_keep_logfiles = 1
+let g:ycm_log_level = 'debug'
+let g:ycm_semantic_triggers =  {
+            \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+            \ 'cs,lua,javascript': ['re!\w{2}'],
+            \ }
+" ------------------------------------------------------------------
+" ------------------------------------------------------------------
+" let g:ycm_server_python_interpreter = 'D:/python35/python.exe'
+" ji jc jd
+nnoremap <leader>gt :YcmCompleter GoTo<CR>
+nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
+nnoremap <leader>gc :YcmCompleter GoToDeclaration<CR>
+nnoremap <leader>gd :YcmCompleter GoToDefinition<CR>
+
+" nnoremap <BS> <c-o>
+nnoremap <F10> :YcmCompleter GoTo<CR>
+" let g:ycm_extra_conf_globlist = ['~/dev/*','!~/*']
+let g:ycm_global_ycm_extra_conf =$VIM.'/tools/ycmconf/tdmgcc_ycm_extra_conf.py'
+command! -complete=customlist,SetYCMParas -nargs=?  SetYCM call SetYCM(<q-args>)
+fun SetYCMParas(A,L,P)
+    let paralist = ["tdmgcc", "msys", "msvc", "qtmsvc", "qtmingw"]
+    let completelist = []
+
+    if !len(a:A)
+        return paralist
+    endif
+
+    let pat = a:A
+    for pa in paralist
+        if pa =~ pat
+            call add(completelist, pa)
+        endif
+    endfor
+    return completelist
+endfun
+
+function! SetYCM(args)
+    if a:args == ""
+        let g:ycm_global_ycm_extra_conf
+        return
+    else
+        let g:ycm_global_ycm_extra_conf =$VIM.'/tools/ycmconf/'. a:args . '_ycm_extra_conf.py'
+        YcmRestartServer
+        let g:ycm_global_ycm_extra_conf
+        return
+    endif
+endfunction
+
+" 允许 vim 加载 .ycm_extra_conf.py 文件,不再提示
+let g:ycm_confirm_extra_conf=0
+" Note that YCM's diagnostics UI is only supported for C-family languages.
+let g:ycm_show_diagnostics_ui = 1
+" 补全功能在注释中同样有效
+let g:ycm_complete_in_comments=1
+" 开启 YCM 基于标签引擎
+let g:ycm_collect_identifiers_from_tags_files=1
+let g:ycm_disable_for_files_larger_than_kb = 5000
+" 引入 C++ 标准库 tags
+" set tags+=/data/misc/software/misc./vim/stdcpp.tags
+" YCM 集成 OmniCppComplete 补全引擎,设置其快捷键
+" inoremap <leader>; <C-x><C-o>
+" 补全内容不以分割子窗口形式出现,只显示补全列表
+set completeopt-=preview
+let g:ycm_auto_trigger = 1
+" 从第一个键入字符就开始罗列匹配项
+let g:ycm_min_num_of_chars_for_completion=2
+" 禁止缓存匹配项,每次都重新生成匹配项
+let g:ycm_cache_omnifunc=0
+" 语法关键字补全
+let g:ycm_seed_identifiers_with_syntax=1
+" let g:ycm_key_invoke_completion = '<M-;>'  
+let g:ycm_key_invoke_completion = '<M-.>'  
+let g:ycm_filetype_whitelist = { '*': 1 }
+" \ 'java' : 1,
+let g:ycm_filetype_blacklist = {
+            \ 'tagbar' : 1,
+            \ 'qf' : 1,
+            \ 'notes' : 1,
+            \ 'markdown' : 1,
+            \ 'unite' : 1,
+            \ 'text' : 1,
+            \ 'vimwiki' : 1,
+            \ 'pandoc' : 1
+            \ }
+" ------------------------------------------------------------------
+"  ultisnips
+" ------------------------------------------------------------------
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+" let g:UltiSnipsExpandTrigger="<tab>"
+" let g:UltiSnipsJumpForwardTrigger="<c-b>"
+" let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsExpandTrigger="<a-k>"
+let g:UltiSnipsJumpForwardTrigger="<a-d>"
+let g:UltiSnipsJumpBackwardTrigger="<a-s>"
+let g:UltiSnipsListSnippets="<a-e> "
+let g:UltiSnipsUsePythonVersion = 3
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+" let g:UltiSnipsSnippetsDir= $VIM . "/vimfiles/plugged/vim-snippets/UltiSnips"
+" ------------------------------------------------------------------
+" ------------------------------------------------------------------
+let g:snips_author = g:ex_usr_name
+fun! GetSnipsInCurrentScope()
+    let snips = {}
+    for scope in [bufnr('%')] + split(&ft, '\.') + ['_']
+        call extend(snips, get(s:snippets, scope, {}), 'keep')
+        call extend(snips, get(s:multi_snips, scope, {}), 'keep')
+    endfor
+    return snips
+endf 
+
+
+" DISABLE: Slow to open big css file
+
+" ------------------------------------------------------------------
+" ex-cref: invoke by <leader>cr
+" ------------------------------------------------------------------
+" this is modified for default c syntax highlight settings 
+" make it don't highlight error pattern
+let c_gnu = 1
+let c_no_curly_error = 1
+let c_no_bracket_error = 1
+" ------------------------------------------------------------------
+Plug 'leafgarland/typescript-vim'
+" ------------------------------------------------------------------
+" ------------------------------------------------------------------
 call plug#end()
 
 " When writing a buffer (no delay).
@@ -1517,8 +1293,7 @@ call plug#end()
 " Full config: when writing or reading a buffer, and on changes in insert and
 " normal mode (after 1s; no delay when writing).
 " call neomake#configure#automake('nrwi', 500)
-
-" ---------------------------------------------------
+" ------------------------------------------------------------------
 " exEnvironmentSetting post update
 " NOTE: this is a post update environment function used for any custom environment update 
 " function g:exES_PostUpdate()
@@ -1617,52 +1392,11 @@ function g:Exvim_post_init()
 endfunction
 " noremap <a-r>  :call g:exES_PostUpdate()<cr>
 noremap <leader>rs :call g:Exvim_post_init()<cr>
-
 "/////////////////////////////////////////////////////////////////////////////
-" Default colorscheme setup
+" General setup
 "/////////////////////////////////////////////////////////////////////////////
-if has('gui_running')
-    set background=dark
-else
-    set background=dark
-    set t_Co=256 " make sure our terminal use 256 color
-    let g:solarized_termcolors = 256
-endif
-colorscheme solarized
-let g:molokai_original = 1
-if has('gui_running')
-    colorscheme molokai
-endif
-
-"/////////////////////////////////////////////////////////////////////////////
-" local setup
-"/////////////////////////////////////////////////////////////////////////////
-"-----------------------------------------------------------------------------  
-" General -   
-"-----------------------------------------------------------------------------  
 " set guiheadroom=-20
-" winpos  1250  0 "nvim hung
-" set lines=60 columns=350  " cause vim statusline ugly
-" au GUIEnter * winpos 1250 0|winsize 80 41|set lines=60 columns=350
-set nocompatible         " Use Vim settings, rather then Vi settings (much better!). This must be first, because it changes other options as a side effect.
-set langmenu=none        " always use English menu
-" set termencoding=utf-8   "tenc==termencoding
-set encoding=utf-8       "enc == encoding
-" set encoding=cp936       "enc == encoding 同时会导致powerline 出错，
-
-if WINDOWS()
-    set fenc=cp936           "fenc == fileencoding
-else
-    set fenc=utf-8           "fenc == fileencoding
-endif
-" set fileencodings=ucs-bom,utf-8,cp936 "fencs==fileencodings
-set fileencodings=utf-8,gbk,gb2312,gb18030,cp936,latin1
-" set fileencodings=utf-bom,utf-8,gbk,gb2312,gb18030,cp936,latin1
-" set fileencodings=utf-8,big5,euc-jp,gbk,euc-kr,utf-bom,iso8859-1
 set ambiwidth=double
-let g:fencview_autodetect = 0    "会导致<leader>gg 出问题？
-language messages en_US.UTF-8     " language messages zh_CN.utf-8
-
 set path=.
 " set path=.,/usr/include/*,, " where gf, ^Wf, :find will search 
 " set path=.,/usr/include/*,, " where gf, ^Wf, :find will search   default on Unix: ".,/usr/include,," 
@@ -1694,16 +1428,24 @@ let g:pydiction_location=$VIM.'\vimfiles/plugged/pydiction/complete-dict'
 
 " Redefine the shell redirection operator to receive both the stderr messages and stdout messages
 set shellredir=>%s\ 2>&1
-set history=5000 " keep 50 lines of command line history
-set updatetime=1000 " default = 4000
-set autoread " auto read same-file change ( better for vc/vim change )
 set maxmempattern=1000 " enlarge maxmempattern from 1000 to ... (2000000 will give it without limit)
 set nomore
 " set more
+set nrformats=alpha,octal,hex
 
-"/////////////////////////////////////////////////////////////////////////////
-" xterm settings
-"/////////////////////////////////////////////////////////////////////////////
+" 防止退出时终端乱码
+" 这里两者都需要。只前者标题会重复，只后者会乱码
+set t_fs=(B
+set t_IE=(B
+" set t_AB=^[[48;5;%dm
+" set t_AF=^[[38;5;%dm
+" set t_k1=O*P
+" set t_k2=O*Q
+" set t_k3=O*R
+" set t_k4=O*S
+" set t_k5=O*S [15~
+
+set selection=old
 
 behave xterm  " set mouse behavior as xterm
 if &term =~ 'xterm'
@@ -1713,21 +1455,90 @@ endif
 "/////////////////////////////////////////////////////////////////////////////
 " Variable settings ( set all )
 "/////////////////////////////////////////////////////////////////////////////
+set completeopt=menu,longest
+" set complete-=i  " Don't scan include files
+" set complete=.,w,b,u,U,k,s,i,d,t
+set complete=.,w,b,u,k,s,i,t
+set magic
+set noerrorbells
+set novisualbell
+set t_vb=
+set mat=2    "How many tenths of a second to blink
+set winaltkeys=no
+set smarttab
+set cursorline
+set history=5000     "Sets how many lines of history VIM har to remember
+filetype on " enable file type detection 
+filetype plugin on  "Enable filetype plugin
+filetype indent on
+set updatetime=1000 " default = 4000
+set autoread        " auto read same-file change ( better for vc/vim change )
+set textwidth=120   "设置最大列数，超出后自动换行
+" set guicursor=n-v-c:block-Cursor/lCursor,ve:ver35-Cursor,o:hor50-Cursor,i-ci-c:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor,sm:block-Cursor-blinkwait175-blinkoff150-blinkon175  
+"Have the mouse enabled all the time:
+set mouse=a
+" set autochdir
+" set guitablabel=%N/\ %t\ %M
+" set bg=dark
+syntax enable  "Enable syntax hl
+autocmd FileType python setlocal et sta sw=4 sts=4
+set tabstop=4            " Set tabstop to 4 characters
+set expandtab            " Set expandtab on, the tab will be change to space automaticaly
+set softtabstop=4    
+set ve=block             " In Visual Block Mode, cursor can be positioned where there is no actual character
+set diffopt=filler,context:9999
+set hid                  " allow to change buffer without saving 
+set showfulltag          " show tag with function protype.
+set guioptions-=m
+set guioptions-=T
+set guioptions-=L
+set guioptions-=r
+set guioptions+=acit    "不用弹出对话框窗口的交互模式，只在命令行交互，3x 百合仙子
+"set noic               "Ignore case in search patterns.  Also used when searching in the tags file.  Also see 'smartcase'.
+set clipboard=unnamed
+set fo=croqn2mM1 " set formatoptions+=rmM
+" set statusline+=%F%m%r%h%w\ [POS=%04l,%04v]\ [%p%%]\ [LEN=%L]\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]
+" set statusline=%n\ %<%f\ %L行\ %{&modified?'[+]':&modifiable\|\|&ft=~'^\\vhelp\|qf$'?'':'[-]'}%h%r%{&fenc=='utf-8'\|\|&fenc==''?'':'['.&fenc.']'}%{&ff=='unix'?'':'['.&ff.']'}%{&bomb?'[BOM]':''}%{&eol?'':'[noeol]'}%=\ 0x%-4.4B\ \ \ \ %-14.(%l,%c%V%)\ %P  “仙子的
+"Tab complete now ignores these file types
 
-" ------------------------------------------------------------------ 
+" set sb
+set wildignore=*.o,*.obj,*.bak,*.exe,*~
+set so=7                "Set 7 lines to the curors - when moving vertical..  minimal number of screen lines to keep above and below the cursor 
+"set whichwrap+=<,>,h,l     "Bbackspace and cursor keys wrap to
+set modeline        " au FileType c,cpp,cs,swig set nomodeline " this will avoid bug in my project with namespace ex, the vim will tree ex:: as modeline.
+set showmode
+set imcmdline
+"set ghr=400
+set ghr=0 " nvim hung
+" NOTE: viminfo
+" for MS-DOS, Windows and OS/2: '20,<50,s10,h,rA:,rB:,
+" for Amiga: '20,<50,s10,h,rdf0:,rdf1:,rdf2:
+" for others: '20,<50,s10,h
+set viminfo+=! " make sure it can save viminfo 
+"set isk+=$,%,#,- " none of these should be word dividers 
+" --------------------------------------------------------------------------------- 
 " Desc: Visual
-" ------------------------------------------------------------------ 
-
+" --------------------------------------------------------------------------------- 
+if has('gui_running')
+    set background=dark
+else
+    set background=dark
+    set t_Co=256 " make sure our terminal use 256 color
+    let g:solarized_termcolors = 256
+endif
+colorscheme solarized
+let g:molokai_original = 1
+if has('gui_running')
+    colorscheme molokai
+endif
 set matchtime=0 " 0 second to show the matching paren ( much faster )
 set nu " show line number
 set scrolloff=0 " minimal number of screen lines to keep above and below the cursor 
 set nowrap " do not wrap text
-
 " only supoort in 7.3 or higher
 if v:version >= 703
     set noacd " no autochchdir
 endif
-
 " set default guifont
 if has('gui_running')
     augroup ex_gui_font
@@ -1772,18 +1583,22 @@ if has('gui_running')
         endif
     endfunction
 endif
-" ------------------------------------------------------------------ 
+" --------------------------------------------------------------------------------- 
 " Desc: Vim UI
-" ------------------------------------------------------------------ 
-set wildmenu " turn on wild menu, try typing :h and press <Tab>
-set showcmd " display incomplete commands
-set cmdheight=1 " 1 screen lines to use for the command-line
-set ruler " show the cursor position all the time
-set hidden " allow to change buffer without saving
-set shortmess=aoOtTI " shortens messages to avoid 'press a key' prompt
-set lazyredraw " do not redraw while executing macros (much faster)
+" --------------------------------------------------------------------------------- 
+set wildmenu          " turn on wild menu, try typing :h and press <Tab>
+set showcmd           " display incomplete commands
+set cmdheight=1       " 1 screen lines to use for the command-line
+set ruler             " show the cursor position all the time
+set hidden            " allow to change buffer without saving
+set shortmess=aoOtTI  " shortens messages to avoid 'press a key' prompt
+set lazyredraw        " do not redraw while executing macros (much faster)
 set display+=lastline " for easy browse last line with wrap text
-set laststatus=2 " always have status-line
+set laststatus=2      " always have status-line
+if version >= 700
+    au InsertEnter * hi StatusLine guibg=#818D29 guifg=#FCFCFC gui=none
+    au InsertLeave * hi StatusLine guibg=#EEEEEE guifg=#363636 gui=none
+endif
 set titlestring=%t\ (%{expand(\"%:p:.:h\")}/)
 
 " set window size (if it's GUI)
@@ -1803,52 +1618,42 @@ if has('gui_running')
     "     " TODO: no way right now
     " endif
 endif
-
-set showfulltag " show tag with function protype.
-
-" ------------------------------------------------------------------ 
+" --------------------------------------------------------------------------------- 
 " Desc: Text edit
-" ------------------------------------------------------------------ 
-
+" --------------------------------------------------------------------------------- 
 " set ai " autoindent 
 " set si " smartindent 
 set backspace=indent,eol,start " allow backspacing over everything in insert mode
 " indent options
 " see help cinoptions-values for more details
-" set	cinoptions=>s,e0,n0,f0,{0,}0,^0,:0,=s,l0,b0,g0,hs,ps,ts,is,+s,c3,C0,0,(0,us,U0,w0,W0,m0,j0,)20,*30,N-s
-  set	cinoptions=>s,e0,n0,f0,{0,}0,^0,:0,=s,l0,b1,g0,hs,ps,ts,is,+s,c3,C0,0,(0,us,U0,w0,W0,m0,j0,)20,*30,N-s
+" set cinoptions=>s,e0,n0,f0,{0,}0,^0,:0,=s,l0,b0,g0,hs,ps,ts,is,+s,c3,C0,0,(0,us,U0,w0,W0,m0,j0,)20,*30,N-s
+set	cinoptions=>s,e0,n0,f0,{0,}0,^0,:0,=s,l0,b1,g0,hs,ps,ts,is,+s,c3,C0,0,(0,us,U0,w0,W0,m0,j0,)20,*30,N-s
 " default '0{,0},0),:,0#,!^F,o,O,e' disable 0# for not ident preprocess
 " set cinkeys=0{,0},0),:,!^F,o,O,e
 set cindent shiftwidth=4 " set cindent on to autoinent when editing c/c++ file, with 4 shift width
-set tabstop=4 " set tabstop to 4 characters
-set expandtab " set expandtab on, the tab will be change to space automaticaly
-set ve=block " in visual block mode, cursor can be positioned where there is no actual character
 
 " set Number format to null(default is octal) , when press CTRL-A on number
 " like 007, it would not become 010
-set nf=
-
-" ------------------------------------------------------------------ 
+" --------------------------------------------------------------------------------- 
 " Desc: Fold text
-" ------------------------------------------------------------------ 
-
+" --------------------------------------------------------------------------------- 
+set nofen                "Enable folding, I find it very useful
+" set foldcolumn=2          "导致vim左边多一个白色的边
+" set foldmethod=syntax  fdn=6
+set foldmethod=manual
 set foldmethod=marker foldmarker={,} foldlevel=9999
-set diffopt=filler,context:9999
-
-" ------------------------------------------------------------------ 
+noremap <leader>zc zf%
+" --------------------------------------------------------------------------------- 
 " Desc: Search
-" ------------------------------------------------------------------ 
-
+" --------------------------------------------------------------------------------- 
 set showmatch " show matching paren 
 set incsearch " do incremental searching
 set hlsearch " highlight search terms
 set ignorecase " set search/replace pattern to ignore case 
 set smartcase " set smartcase mode on, If there is upper case character in the search patern, the 'ignorecase' option will be override.
-
 " set this to use id-utils for global search
 set grepprg=lid\ -Rgrep\ -s
 set grepformat=%f:%l:%m
-
 
 " official diff settings
 set diffexpr=g:MyDiff()
@@ -1868,20 +1673,16 @@ endfunction
 "/////////////////////////////////////////////////////////////////////////////
 " Auto Command
 "/////////////////////////////////////////////////////////////////////////////
-
-" ------------------------------------------------------------------ 
+" --------------------------------------------------------------------------------- 
 " Desc: Only do this part when compiled with support for autocommands.
-" ------------------------------------------------------------------ 
-
+" --------------------------------------------------------------------------------- 
 if has('autocmd')
 
     augroup ex
         au!
-
-        " ------------------------------------------------------------------ 
+        " --------------------------------------------------------------------------------- 
         " Desc: Buffer
-        " ------------------------------------------------------------------ 
-
+        " --------------------------------------------------------------------------------- 
         " when editing a file, always jump to the last known cursor position.
         " don't do it when the position is invalid or when inside an event handler
         " (happens when dropping a file on gvim).
@@ -1899,10 +1700,9 @@ if has('autocmd')
         " au   BufEnter *   execute ":lcd " . expand("%:p:h") 
         " } DISABLE end 
 
-        " ------------------------------------------------------------------ 
+        " --------------------------------------------------------------------------------- 
         " Desc: file types 
-        " ------------------------------------------------------------------ 
-
+        " --------------------------------------------------------------------------------- 
         au FileType text setlocal textwidth=78 " for all text files set 'textwidth' to 78 characters.
         au FileType c,cpp,cs,swig set nomodeline " this will avoid bug in my project with namespace ex, the vim will tree ex:: as modeline.
 
@@ -1939,8 +1739,6 @@ if has('autocmd')
                 return
             endif
         endif
-
-        " 
         if has_noexpandtab == 1 && has_expandtab == 0  
             echomsg 'substitute space to TAB...'
             set noexpandtab
@@ -2035,126 +1833,6 @@ noremap <Down> gj
 " the word will be swapped with the next word.  The words may
 " even be separated by punctuation (such as "abc = def").
 nnoremap <silent> <leader>sw "_yiw:s/\(\%#\w\+\)\(\W\+\)\(\w\+\)/\3\2\1/<cr><c-o>
-
-"/////////////////////////////////////////////////////////////////////////////
-" local setup
-"/////////////////////////////////////////////////////////////////////////////
-" ------------------------------------------------------------------ 
-" Desc: 
-" ------------------------------------------------------------------ 
-set completeopt=menu,longest
-" set completeopt=menuone,longest
-" set complete-=i  " Don't scan include files
-" set complete=.,w,b,u,U,k,s,i,d,t
-set complete=.,w,b,u,k,s,i,t
-set magic
-set noerrorbells
-set novisualbell
-set t_vb=
-set mat=2    "How many tenths of a second to blink
-set hlsearch "Highlight search things
-set winaltkeys=no
-set smarttab
-set cursorline
-set history=400     "Sets how many lines of history VIM har to remember
-filetype plugin on  "Enable filetype plugin
-filetype indent on
-set updatetime=1000 " default = 4000
-set autoread        " auto read same-file change ( better for vc/vim change )
-set textwidth=120   "设置最大列数，超出后自动换行
-
-" set guicursor=n-v-c:block-Cursor/lCursor,ve:ver35-Cursor,o:hor50-Cursor,i-ci-c:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor,sm:block-Cursor-blinkwait175-blinkoff150-blinkon175  
-"Have the mouse enabled all the time:
-set mouse=a
-" set autochdir
-" set guitablabel=%N/\ %t\ %M
-" set bg=dark
-syntax enable  "Enable syntax hl
-autocmd FileType python setlocal et sta sw=4 sts=4
-set shiftwidth=4
-set tabstop=4            " Set tabstop to 4 characters
-set expandtab            " Set expandtab on, the tab will be change to space automaticaly
-set softtabstop=4    
-set nf=                  " Set Number format to null(default is octal) , when press CTRL-A on number
-set ve=block             " In Visual Block Mode, cursor can be positioned where there is no actual character
-set nofen                "Enable folding, I find it very useful
-"set foldcolumn=2          "导致vim左边多一个白色的边
-" set foldmethod=syntax  fdn=6
-set foldmethod=manual
-" noremap zc zf%
-noremap <leader>zc zf%
-" set foldlevel=2
-" set foldmethod=marker foldmarker={,} foldlevel=9999
-set diffopt=filler,context:9999
-set wildmenu             " turn on wild menu, try typing :h and press <Tab> 
-set showcmd	             " display incomplete commands
-set cmdheight=1          " 1 screen lines to use for the command-line 
-set ruler                " show the cursor position all the time
-set hid                  " allow to change buffer without saving 
-set shortmess=atI        " shortens messages to avoid 'press a key' prompt 
-set lazyredraw           "set lz" do not redraw while executing macros (much faster) 
-set display+=lastline    " for easy browse last line with wrap text
-set showfulltag          " show tag with function protype.
-set guioptions-=m
-set guioptions-=T
-set guioptions-=L
-set guioptions-=r
-set guioptions+=acit    "不用弹出对话框窗口的交互模式，只在命令行交互，3x 百合仙子
-"set noic               "Ignore case in search patterns.  Also used when searching in the tags file.  Also see 'smartcase'.
-set clipboard=unnamed
-"au GUIEnter * simalt ~x
-set laststatus=2        " always have status-line
-if version >= 700
-    au InsertEnter * hi StatusLine guibg=#818D29 guifg=#FCFCFC gui=none
-    au InsertLeave * hi StatusLine guibg=#EEEEEE guifg=#363636 gui=none
-endif
-
-" set formatoptions+=rmM
-set fo=croqn2mM1
-" set statusline+=%F%m%r%h%w\ [POS=%04l,%04v]\ [%p%%]\ [LEN=%L]\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]
-" set statusline=%n\ %<%f\ %L行\ %{&modified?'[+]':&modifiable\|\|&ft=~'^\\vhelp\|qf$'?'':'[-]'}%h%r%{&fenc=='utf-8'\|\|&fenc==''?'':'['.&fenc.']'}%{&ff=='unix'?'':'['.&ff.']'}%{&bomb?'[BOM]':''}%{&eol?'':'[noeol]'}%=\ 0x%-4.4B\ \ \ \ %-14.(%l,%c%V%)\ %P  “仙子的
-"Tab complete now ignores these file types
-
-" set sb
-set wildignore=*.o,*.obj,*.bak,*.exe,*~
-set so=7                "Set 7 lines to the curors - when moving vertical..  minimal number of screen lines to keep above and below the cursor 
-"set whichwrap+=<,>,h,l     "Bbackspace and cursor keys wrap to
-set backspace=2            " set backspace=indent,eol,start  allow backspacing over everything in insert mode " indent options
-
-" set cinoptions=>s,e0,n0,f0,{0,}0,^0,:0,=s,l0,b0,g0,+0,hs,ps,ts,is,+s,c3,C0,0,(0,us,U0,w0,W0,m0,j0,)20,*30 
-" set cinoptions+=j1
-
-" let java_comment_strings=1
-" let java_highlight_java_lang_ids=1
-" let java_mark_braces_in_parens_as_errors=1
-" let java_highlight_all=1
-" let java_highlight_debug=1
-" let java_ignore_javadoc=1
-" let java_highlight_java_lang_ids=1
-" let java_highlight_functions="style"
-" let java_minlines = 150
-
-" see help cinoptions-values for more details " default '0{,0},0),:,0#,!^F,o,O,e' disable 0# for not ident preprocess
-" set cinkeys=0{,0},0),:,!^F,o,O,e      "default
-set modeline        " au FileType c,cpp,cs,swig set nomodeline " this will avoid bug in my project with namespace ex, the vim will tree ex:: as modeline.
-set showmode
-set imcmdline
-set incsearch       " do incremental searching
-set ignorecase    " Set search/replace pattern to ignore case  这个参数也会导致vjde无法补全 
-set smartcase       " Set smartcase mode on, If there is upper case character in the search patern, the 'ignorecase' option will be override.
-"set ghr=400
-set ghr=0 " nvim hung
-set showmatch      " show matching paren  设置匹配模式
-set matchtime=0    " 0 second to show the matching paren ( much faster )
-set nu             " Show LineNumber
-" NOTE: viminfo
-" for MS-DOS, Windows and OS/2: '20,<50,s10,h,rA:,rB:,
-" for Amiga: '20,<50,s10,h,rdf0:,rdf1:,rdf2:
-" for others: '20,<50,s10,h
-set viminfo+=! " make sure it can save viminfo 
-filetype on " enable file type detection 
-filetype plugin on " enable loading the plugin for appropriate file type 
-"set isk+=$,%,#,- " none of these should be word dividers 
 " noremap <silent><leader>rs :source ~/.vimrc<cr>   
 if has ("unix")
     noremap <leader>ee :e! ~/.vimrc<cr>
@@ -2165,28 +1843,11 @@ endif
 
 " source $VIMRUNTIME/vimrc_example.vim
 behave xterm  " set mouse behavior as xterm
-
-" set makeef=error.err " the errorfile for :make and :grep 
-" set makeef=.exvim.hs/error.qfix " the errorfile for :make and :grep 
-" set makeprg=make
-" set makeprg=make\ 2>&1\\\|tee\ errors.qfix
+"/////////////////////////////////////////////////////////////////////////////
+" Functions
+"/////////////////////////////////////////////////////////////////////////////
 let g:ex_project_maker = 'make'
-" function I_lMk()
-    " " :cd %:p:h
-    " lmake
-    " exec "normal \<c-o>"
-    " lopen
-    " exec "normal G"
-    " exec "normal ?err"
-" endfunction
-" function I_lMkClean()
-    " " :cd %:p:h
-    " make clean
-" endfunction
-let g:ex_project_maker = 'make'
-
 let g:ex_qfix_file = './error.qfix'
-" let g:ex_error_file = './error.err'
 function IMake()
     if WINDOWS()
         exec "!".g:ex_project_maker. " > ".g:ex_qfix_file. " 2>&1 "
@@ -2201,25 +1862,10 @@ function IMake()
     call writefile(qfixlist, g:ex_qfix_file)
     exec "close"
     silent exec 'QFix '. g:ex_qfix_file
-
-    " silent redir! >qfix_list
-    " exec "cgetfile ".g:ex_qfix_file
-    " silent! exec 'cl'
-    " silent! exec "copen" 
-    " silent redir END
-    " silent exec 'QFix qfix_list' 
-
-    " call exqfix#open(g:ex_qfix_file)
-    " silent exec '1,$d _'
-    " silent put! = qfix_list
-    
-    " silent exec 'QFix '. g:ex_qfix_file
 endfunction
-
 function IMakeClean()
     exec "!start ".g:ex_project_maker." clean "
 endfunction
-
 noremap <unique> <silent> <leader><F1>  :call IMake()<cr>
 noremap <unique> <silent> <S-F1>  :call IMakeClean()<cr>
 
@@ -2237,8 +1883,7 @@ endfunction
 
 command! -nargs=* -complete=file LMGrep call LMGrep(<q-args>)
 command! -nargs=* -complete=file LMGrepAdd call LMGrepAdd(<q-args>)
-
-" ------------------------------------------------------------------ 
+" --------------------------------------------------------------------------------- 
 " NOTE: F10 looks like have some feature, when noremap with F10, the noremap will take no effects
 " Don't use Ex mode, use Q for formatting
 " noremap Q gq    
@@ -2259,15 +1904,9 @@ command Changelist :silent !p4 change
 command ShowChangelist :!p4 changes -s pending -u jwu
 " } TODO end 
 
-" ------------------------------------------------------------------ 
-" Auto Command
-" ------------------------------------------------------------------ 
-" ------------------------------------------------------------------ 
-" Desc: Only do this part when compiled with support for autocommands.
-" ------------------------------------------------------------------ 
-" ------------------------------------------------------------------ 
+" --------------------------------------------------------------------------------- 
 " Desc: file types 
-" ------------------------------------------------------------------ 
+" --------------------------------------------------------------------------------- 
 " VimTip 311: Open the folder containing the currently open file
 " http://vim.sourceforge.net/tip_view.php?tip_id=
 " 
@@ -2277,7 +1916,6 @@ command ShowChangelist :!p4 changes -s pending -u jwu
 " folder of an anonymous buffer, we would get an explorer error dialog in 
 " that case.
 " 
-
 " DISABLE: auto highlight cursor word
 " let g:ex_auto_hl_cursor_word = 1
 
@@ -2287,50 +1925,27 @@ command ShowChangelist :!p4 changes -s pending -u jwu
 " To let the extension language works correctly, you need to put tools/ctags/.ctags into your $HOME directory
 " set ctags language noremap
 " newexvim call exUtility#AddLangMap ( 'ctags', 'maxscript', ['ms'] )
-
-" ------------------------------------------------------------------ 
+" --------------------------------------------------------------------------------- 
 map <Leader><F12> :call HexHighlight()<CR>
 
 let g:user_zen_leader_key = '<c-z>'
-"-----------------------------------------------------------------------------  
+"------------------------------------------------------------------  
 let maplocalleader = '\'
-"-----------------------------------------------------------------------------  
+"------------------------------------------------------------------  
 noremap <leader>Q :qa<CR>
 
 "noremap <F11> <Esc>:call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)<CR>
-" ------------------------------------------------------------------------------
+" -------------------------------------------------------------------
 "  ctags
-" ------------------------------------------------------------------------------
+" -------------------------------------------------------------------
 " let g:ctags_options='--c-kinds=+lpx --c++-kinds=+lpx --fields=+ialS --extra=+qf --languages=c,c++,c#,java,python,vim,matlab,make,sh,XML, --langmap=c++:+.,c:+.C,c++:+.H,c++:+.inl,c++:+.ipp,python:+.pyw,c:+.hlsl,c:+.vsh,c:+.psh,c:+.fx,c:+.fxh,c:+.cg,c:+.shd,c:+.glsl, -I EXTERN=extern -I __nonull -I __dead2 -I __pure2 -I __unused -I __packed -I __aligned -I __section -I __always_inline -I __nonnull -I __wur -I __THROW'
 let g:ctags_options='--tag-relative=no --c-kinds=+lpx --c++-kinds=+lpx --fields=+ialS --extra=+qf  -I EXTERN=extern -I __nonull -I __dead2 -I __pure2 -I __unused -I __packed -I __aligned -I __section -I __always_inline -I __nonnull -I __wur -I __THROW'
-
-let g:ex_update_async = 1
-let g:ex_update_bwipe = 0
-nnoremap <silent><leader>up :Update<CR>
-nnoremap <silent><F6>   :Update<CR>
 
 " autocmd VimLeave * :!echo -ne "\e]12;green\007"
 " autocmd VimLeave * :!echo -ne "\e]12;black\007"
 
-" 防止退出时终端乱码
-" 这里两者都需要。只前者标题会重复，只后者会乱码
-set t_fs=(B
-set t_IE=(B
-" set t_AB=^[[48;5;%dm
-" set t_AF=^[[38;5;%dm
-
-" set t_k1=O*P
-" set t_k2=O*Q
-" set t_k3=O*R
-" set t_k4=O*S
-" set t_k5=O*S [15~
-
-set selection=old
-
 " au BufEnter *.txt setlocal ft=txt
 " au BufEnter *.wiki set nocursorline
-
-" let g:tabular_loaded = 1
 
 let g:TypesFileDoNotGenerateTags = 1
 " let b:TypesFileIncludeLocals = 1
@@ -2408,8 +2023,7 @@ function! QtCppIndent()
 endfunc
 "这个会导致c++ public关键字缩进有问题
 " set indentexpr=QtCppIndent()
-
-" -----------------------------------------------------------------
+" --------------------------------------------------------------------------------
 " 二进制 vim -b 二进制文件
 " 十六进制 先以二进制打开文件，再在命令模式键入 :%!xxd
 " command TOBIN silent exec '%!xxd'
@@ -2478,16 +2092,9 @@ command -nargs=? Sw :w !sudo tee %
 
 let g:EasyGrepWindow=1
 let g:EasyGrepReplaceWindowMode=2
-
-au BufWinLeave  silent! mkview
-au BufWinEnter  silent! loadview
-
-" set splitbelow
-" set splitright
-
-"-----------------------------------------------------------------------------  
+"------------------------------------------------------------------  
 " keymaps -   
-"-----------------------------------------------------------------------------  
+"------------------------------------------------------------------  
 " smart coding map
 " noremap <leader>bb <esc>F(a
 inoremap <a-h> <esc>:call BackBra()<CR>a
@@ -2596,12 +2203,9 @@ command Astyle silent exec '%!astyle --style=kr'
 " nnoremap <leader>as :Astyle<cr>  
 " nnoremap <a-a> :Astyle<cr>  
 
-set nomore 
-
 " 函数定义 ，] 返回历史列表用,tt   直接返回用bs
 " marker用,ms
 
-" set shortmess+=A
 " let g:indentLine_color_term = 239,
 " let g:indentLine_color_gui = '#A4E57E' 
 " let g:indentLine_char = '┆'
@@ -2619,12 +2223,12 @@ set nomore
 " nn <leader>t0 :tablast<CR>
 
 function! TabMessage(cmd)
-  redir => message
-  silent execute a:cmd
-  redir END
-  tabnew
-  silent put=message
-  set nomodified
+    redir => message
+    silent execute a:cmd
+    redir END
+    tabnew
+    silent put=message
+    set nomodified
 endfunction
 command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
 
@@ -2651,5 +2255,4 @@ nnoremap <silent> <a-A> :call fuf#givencmd#launch('', 0, 'Select CMD>', GetAllVi
 
 command! -bar Helptags :call plug#helptags()
 
-set nrformats=alpha,octal,hex
 " vim:ts=4:sw=4:sts=4 et fdm=marker:
