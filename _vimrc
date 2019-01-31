@@ -38,6 +38,7 @@ else
 endif
 
 " try to set encoding to utf-8
+set fileencodings=ucs-bom,utf-8,gbk,gb2312,gb18030,cp936,latin1
 if WINDOWS()
     " Be nice and check for multi_byte even if the config requires
     " multi_byte support most of the time
@@ -52,8 +53,8 @@ if WINDOWS()
         " fallback into cp1252 instead of eg. iso-8859-15.
         " Newer Windows files might contain utf-8 or utf-16 LE so we might
         " want to try them first.
-        set fileencodings=ucs-bom,utf-8,utf-16le,cp1252,iso-8859-15
-        " set fileencodings=utf-8,gbk,gb2312,gb18030,cp936,latin1
+        " set fileencodings=ucs-bom,utf-8,utf-16le,cp1252,iso-8859-15
+        set fileencodings=ucs-bom,utf-8,gbk,gb2312,gb18030,cp936,latin1
     endif
 else
     " set default encoding to utf-8
@@ -68,19 +69,19 @@ endif
 
 " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
 " across (heterogeneous) systems easier.
-if !exists('g:exvim_custom_path')
-    if WINDOWS()
-        let g:exvim_custom_path=$VIM
-        " set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
-        set runtimepath=$VIM/vimfiles
-        set runtimepath+=$VIMRUNTIME
-        set runtimepath+=$VIM/vimfiles/after
-        set runtimepath+=$HOME/.vim/after
-        set runtimepath+=$VIM/vimfiles
-        let g:ex_tools_path = g:exvim_custom_path.'/tools/'
-    endif
+if WINDOWS()
+    let g:exvim_custom_path=$VIM
+    " set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+    set runtimepath=$VIM/vimfiles
+    set runtimepath+=$VIMRUNTIME
+    set runtimepath+=$VIM/vimfiles/after
+    set runtimepath+=$HOME/.vim/after
+    set runtimepath+=$VIM/vimfiles
+    set runtimepath+=$VIM/tools
+    let g:ex_tools_path = g:exvim_custom_path.'/tools/'
 endif
 let g:ex_usr_name = "yang"
+let g:ex_dir_prefix = 'exvim'
 " let g:mapleader=","
 let g:mapleader="\<Space>"
 
@@ -197,6 +198,11 @@ nnoremap <silent><F6>   :Update<CR>
 Plug 'exvim/ex-cref'
 " ------------------------------------------------------------------
 Plug 'cpiger/ex-cscope'
+Plug 'joereynolds/gtags-scope'
+" Plug 'cpiger/gtags.vim'
+let GtagsCscope_Auto_Load = 0
+let CtagsCscope_Auto_Map = 0
+let GtagsCscope_Quiet = 1
 " ------------------------------------------------------------------
 let g:ex_cscope_winsize = 15
 let g:ex_symbol_select_cmd = 'CScopeSelect'
@@ -278,7 +284,7 @@ let g:exmb_window_direction = 'bel'
 Plug 'cpiger/ex-matchit'
 " ------------------------------------------------------------------
 " Plug 'cpiger/ex-minibuf'
-" Plug fholgado/minibufexpl.vim
+" Plug 'fholgado/minibufexpl.vim'
 " ------------------------------------------------------------------
 let g:miniBufExplMapCTabSwitchBufs = 1
 " nnoremap <buffer> <TAB>   :call search('\[[0-9]*:[^\]]*\]')<CR>:<BS>
@@ -303,16 +309,24 @@ function Exec_3G()
         exec   "normal 3G" 
     endif 
 endfunction
-autocmd BufReadPost,BufAdd,BufCreate,BufWinEnter,WinEnter __Tag_List__  call Exec_3G()
-autocmd CursorMoved __Tag_List__  call Exec_3G()
+autocmd BufReadPost,BufAdd,BufCreate,BufWinEnter,WinEnter __Tag_List__,__Tagbar__.1 call Exec_3G()
+autocmd CursorMoved __Tag_List__,__Tagbar__.1 call Exec_3G()
 " ------------------------------------------------------------------
 Plug 'cpiger/ex-project'
 " ------------------------------------------------------------------
 let g:ex_project_stay_after_select = 0
 let g:ex_project_winpos='right'
-noremap <S-F12> :EXProjectToggle<CR>
-noremap <F9> :EXProjectToggle<CR>
-" noremap <C-F12> :EXProjectToggle<CR>
+noremap <silent><F9> :call ToggleProjectExplorer()<CR>
+function ToggleProjectExplorer()
+    let project_name = vimentry#get('project_name')
+    if project_name == ''
+        silent exec "NERDTreeToggle"
+    else
+        silent exec "NERDTreeClose"
+        silent exec "EXProjectToggle"
+    endif
+endfunction
+
 nnoremap <unique> <leader>ve :call exconfig#edit_cur_vimentry ()<CR>
 hi default link ex_pj_tree_line NonText
 Plug 'cpiger/ex-qfix'
@@ -370,7 +384,7 @@ let g:ex_symbol_select_cmd = 'TS'
 " ------------------------------------------------------------------
 Plug 'cpiger/ex-taglist'
 " Plug 'cpiger/ex-tagbar'
-" Plug 'majutsushi/tagbar'
+" Plug 'majutsushi/tagbar' "cause cursor lag
 " autocmd FileType tagbar setlocal nocursorline nocursorcolumn
 " ------------------------------------------------------------------
 nnoremap <unique> <silent> <F2> :Tlist<CR>:call Exec_3G()<CR>
@@ -511,6 +525,7 @@ Plug 'cpiger/ex-visincr'
 " ------------------------------------------------------------------
 Plug 'mbbill/fencview'
 " ------------------------------------------------------------------
+nnoremap <silent> <Leader>fa :FencAutoDetect <CR>
 let g:fencview_autodetect = 0    "会导致<leader>gg 出问题？
 " ------------------------------------------------------------------
 Plug 'cpiger/vim-l9'
@@ -534,7 +549,12 @@ endfunction
 
 " autocmd! VimEnter * FufPrepare
 nnoremap <silent><C-F10> :FufPrepare<cr>
-let g:fuf_coveragefile_external_cmd = 'fd -t f'
+if has('win32') || has('win64')
+    let g:fuf_coveragefile_external_cmd = 'es.exe'
+else
+    let g:fuf_coveragefile_external_cmd = 'fd -t f'
+endif
+let g:fuf_coveragefile_exclude = '\v\~$|\.(o|exe|dll|bak|orig|swp)$|(^|[/\\])\.(hg|git|bzr|exvim.*)($|[/\\])'
 " let g:fuf_keySwitchMatching = '<C-\><C-\>'
 let g:fuf_keySwitchMatching = '<C-Tab>'
 " let g:fuf_patternSeparator = ';'
@@ -581,12 +601,14 @@ command FEditDataFile                  FufEditDataFile
 command FRenewCache                    FufRenewCache                   
 command FTaggedFileExVim               FufTaggedFileExVim
 
+noremap <silent> <S-F8> :FufRenewCache<CR>
 let g:fuf_taggedfile_cache_dir = '~/.vim-fuf-cache/taggedfile'
 noremap  <silent> <leader>ag :FufAg <C-r>=expand('<cword>')<CR><CR>
 nnoremap <silent> <leader>fb :FufBuffer<CR>
 nnoremap <silent> <A-b>      :FufBuffer<CR>
 nnoremap <silent> <A-t>      :FufBufferTag<CR>
 nnoremap <silent> <A-T>      :FufBufferTagAll<CR>
+nnoremap <silent> <A-e>      :FufLine<CR>
 nnoremap <silent> <leader>fl :FufLine<CR>
 nnoremap <silent> <A-f>      :FufCoverageFile<CR>
 nnoremap <silent> <leader>fd :FufDir<CR>
@@ -602,7 +624,6 @@ function! FufTaggedFile_exVim(args)
 endfunction
 command! -nargs=* -complete=file FufTaggedFileExVim call FufTaggedFile_exVim(<q-args>)
 nnoremap <silent><leader>tf :FufTaggedFileExVim<cr>
-nnoremap <silent><C-F8> :FufTaggedFileExVim <c-r>=expand('<cfile>')<cr><cr>
 nnoremap <silent><A-F> :FufTaggedFileExVim<cr>
 " ------------------------------------------------------------------
 Plug 'junegunn/fzf', {'do': './install --all' }
@@ -634,7 +655,7 @@ Plug 'eagletmt/neco-ghc'
 " ------------------------------------------------------------------
 Plug 'ujihisa/neco-look'
 " ------------------------------------------------------------------
-Plug 'Shougo/neocomplete.vim'
+" Plug 'Shougo/neocomplete.vim'
 "------------------------------------------------------------------  
 " Plug 'cpiger/vgdb-vim'
 Plug 'cpiger/NeoDebug'
@@ -648,12 +669,10 @@ map <silent> <C-F5> :NeoDebug<cr>
 " nmap <silent> <C-F5> :VGdb<cr>
 " noremap <silent> <F5> <ESC>
 "------------------------------------------------------------------  
-noremap <silent> <S-F8> :bel 56vsplit gdbvars<CR>:setlocal nobuflisted<CR>:wincmd h<CR>
 " ------------------------------------------------------------------
 Plug 'neomake/neomake'
 " ------------------------------------------------------------------
 Plug 'scrooloose/nerdcommenter'
-" Plug 'tpope/vim-commentary'
 " ------------------------------------------------------------------
 let g:NERDSpaceDelims = 1
 let g:NERDRemoveExtraSpaces = 1
@@ -705,11 +724,11 @@ function EnhCommentifyCallback(ft)
 endfunction
 let g:EnhCommentifyCallbackExists = 'Yes'
 " ------------------------------------------------------------------
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'cpiger/nerdtree'
 " ------------------------------------------------------------------
-let g:NERDTreeWinSize = 30
 let g:NERDTreeMouseMode = 1
 let g:NERDTreeMapToggleZoom = 'z' 
+let g:NERDTreeWinSizeIncreament=30
 "let NERDChristmasTree=1
 let NERDTreeAutoCenter=1
 " let NERDTreeBookmarksFile='~/.vim/NerdBookmarks.txt'
@@ -719,14 +738,12 @@ let NERDTreeShowFiles=1
 "let NERDTreeShowHidden=1
 let NERDTreeShowLineNumbers=1
 let NERDTreeWinPos='right'
-" let NERDTreeWinSize=35
 let NERDTreeWinSize=35
 " let NERDTreeIgnore=['\.vim$', '\~$','\.dsp$','\.aps$','\.dsw$','\.opt$','\.ncb$']
 " let NERDTreeIgnore=['\.vim$', '\~$','\.dsp$','\.aps$','\.dsw$','\.opt$','\.ncb$']
 
 " Open and close the NERD_tree.vim separately
-noremap <C-F9> <ESC>:NERDTreeToggle<CR>
-noremap <S-F9> <ESC>:NERDTreeToggle<CR>:silent! call nerdtree#ui_glue#chRootCwd()<CR>
+noremap <S-F9> :EXProjectClose<CR>:NERDTreeToggle<CR>
 " ------------------------------------------------------------------
 " Plug 'roxma/nvim-completion-manager'
 " ------------------------------------------------------------------
@@ -747,6 +764,12 @@ Plug 'hdima/python-syntax'
 " Plug 'artoj/qmake-syntax-vim'
 " ------------------------------------------------------------------
 Plug 'fedorenchik/qt-support.vim'
+" ------------------------------------------------------------------
+Plug 'cpiger/vim-rooter'
+" ------------------------------------------------------------------
+" let g:rooter_manual_only = 1
+let g:rooter_silent_chdir = 1
+let g:rooter_patterns = ['.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/', '.ycm_extra_conf.py', '.qmake.stash'] 
 " ------------------------------------------------------------------
 Plug 'vim-scripts/sketch.vim'
 " ------------------------------------------------------------------
@@ -770,6 +793,14 @@ let g:syntastic_java_javac_classpath="./:/mdata/mspace/SS01E17A/bin/classes:/opt
 let g:syntastic_java_javac_config_file_enabled=1 
 " this will make html file by Angular.js ignore errors
 let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
 " ------------------------------------------------------------------
 "let g:syntastic_check_on_open = 1
 "" let g:syntastic_cpp_include_dirs = ['/usr/include/']
@@ -1039,16 +1070,103 @@ endif
 " ------------------------------------------------------------------
 let g:gitgutter_max_signs=50000
 " ------------------------------------------------------------------
-Plug 'fatih/vim-go'
-Plug 'fatih/vim-go-tutorial'
+" Plug 'fatih/vim-go'
+let g:go_bin_path = $GOPATH.'/bin'
+let g:go_fmt_command = "goimports"
+let g:syntastic_go_checkers = ['golint', 'govet', 'gometalinter']
+let g:syntastic_go_gometalinter_args = ['--disable-all', '--enable=errcheck']
+let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+" let g:go_list_type = "quickfix"
+
+" vim-go
+let g:go_fmt_command = "goimports"
+let g:go_autodetect_gopath = 1
+let g:go_list_type = "quickfix"
+
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_generate_tags = 1
+
+" Open :GoDeclsDir with ctrl-g
+nmap <C-g> :GoDeclsDir<cr>
+imap <C-g> <esc>:<C-u>GoDeclsDir<cr>
+
+
+augroup go
+  autocmd!
+
+  " Show by default 4 spaces for a tab
+  autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
+
+  " :GoBuild and :GoTestCompile
+  autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+
+  " :GoTest
+  autocmd FileType go nmap <leader>t  <Plug>(go-test)
+
+  " :GoRun
+  autocmd FileType go nmap <leader>r  <Plug>(go-run)
+
+  " :GoDoc
+  autocmd FileType go nmap <Leader>d <Plug>(go-doc)
+
+  " :GoCoverageToggle
+  autocmd FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
+
+  " :GoInfo
+  autocmd FileType go nmap <Leader>i <Plug>(go-info)
+
+  " :GoMetaLinter
+  autocmd FileType go nmap <Leader>l <Plug>(go-metalinter)
+
+  " :GoDef but opens in a vertical split
+  autocmd FileType go nmap <Leader>v <Plug>(go-def-vertical)
+  " :GoDef but opens in a horizontal split
+  autocmd FileType go nmap <Leader>s <Plug>(go-def-split)
+
+  " :GoAlternate  commands :A, :AV, :AS and :AT
+  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+  autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
+augroup END
+
+" build_go_files is a custom function that builds or compiles the test file.
+" It calls :GoBuild if its a Go file, or :GoTestCompile if it's a test file
+function! s:build_go_files()
+  let l:file = expand('%')
+  if l:file =~# '^\f\+_test\.go$'
+    call go#test#Test(0, 1)
+  elseif l:file =~# '^\f\+\.go$'
+    call go#cmd#Build(0)
+  endif
+endfunction
+" Call YCM GoTo or vim-go GoTo depending on file type. 
+function! GoToDef()
+    if &ft == 'go'
+        call go#def#Jump()
+    else
+        execute 'YcmCompleter GoTo'
+    endif
+endfunction
+" nnoremap <leader>] :call GoToDef()<CR>
+
+" Plug 'fatih/vim-go-tutorial'
 " ------------------------------------------------------------------
 " Plug 'roxma/vim-hug-neovim-rpc'
+" ------------------------------------------------------------------
+Plug 'rust-lang/rust.vim'
 " ------------------------------------------------------------------
 Plug 'nathanaelkane/vim-indent-guides'
 " ------------------------------------------------------------------
 let g:indent_guides_guide_size = 1
 " ------------------------------------------------------------------
 Plug 'suan/vim-instant-markdown'
+" ------------------------------------------------------------------
+" Plug 'artur-shaik/vim-javacomplete2'
 " ------------------------------------------------------------------
 Plug 'pangloss/vim-javascript'
 " ------------------------------------------------------------------
@@ -1075,6 +1193,8 @@ Plug 'plasticboy/vim-markdown'
 let g:vim_markdown_initial_foldlevel=9999
 " ------------------------------------------------------------------
 Plug 'terryma/vim-multiple-cursors'
+" ------------------------------------------------------------------
+Plug 'ryanoasis/vim-devicons'
 " ------------------------------------------------------------------
 Plug 'sheerun/vim-polyglot'
 " ------------------------------------------------------------------
@@ -1117,6 +1237,13 @@ Plug 'vimwiki/vimwiki'
 " noremap <silent><unique> <Leader>wt <Plug>VimwikiTabGoHome
 " noremap <silent><unique> <Leader>wq <Plug>VimwikiUISelect
 " noremap <silent><unique> <Leader>ww <Plug>VimwikiGoHome
+let g:vimwiki_list = [ 
+            \ {'path': 'D:/exVim/vimwiki'},
+            \ {"path": "D:/exVim/vimwikimd/", 
+            \ "syntax": "markdown",
+            \ "ext": ".md"} 
+            \ ]
+
 let tlist_vimwiki_settings = 'wiki;h:Headers'
 " vimwiki file process
 au FileType vimwiki command! W call exUtility#SaveAndConvertVimwiki(0)
@@ -1149,6 +1276,16 @@ Plug 'honza/vim-snippets'
 " ------------------------------------------------------------------
 Plug 'Valloric/YouCompleteMe', { 'on': [] }
 " ------------------------------------------------------------------
+let g:ycm_cache_omnifunc = 0
+func ToggleYCM()
+    let g:ycm_auto_trigger = !g:ycm_auto_trigger
+    if 1 == g:ycm_auto_trigger
+        call ex#hint("Turn on YCM.")
+    else
+        call ex#hint("Turn off YCM.")
+    endif
+endf
+nnoremap <c-f8>  :call ToggleYCM()<CR>
 augroup load_us_ycm
     autocmd!
     autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
@@ -1157,9 +1294,22 @@ augroup END
 let g:ycm_keep_logfiles = 1
 let g:ycm_log_level = 'debug'
 let g:ycm_semantic_triggers =  {
-            \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
-            \ 'cs,lua,javascript': ['re!\w{2}'],
+            \   'c': ['->', '.'],
+            \   'objc': ['->', '.', 're!\[[_a-zA-Z]+\w*\s', 're!^\s*[^\W\d]\w*\s',
+            \            're!\[.*\]\s'],
+            \   'ocaml': ['.', '#'],
+            \   'cpp,cuda,objcpp': ['->', '.', '::'],
+            \   'perl': ['->'],
+            \   'php': ['->', '::'],
+            \   'cs,d,elixir,go,groovy,java,javascript,julia,perl6,python,scala,typescript,vb': ['.'],
+            \   'ruby,rust': ['.', '::'],
+            \   'lua': ['.', ':'],
+            \   'erlang': [':'],
             \ }
+" let g:ycm_semantic_triggers =  {
+            " \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+            " \ 'cs,lua,javascript': ['re!\w{2}'],
+            " \ }
 " ------------------------------------------------------------------
 " ------------------------------------------------------------------
 " let g:ycm_server_python_interpreter = 'D:/python35/python.exe'
@@ -1172,7 +1322,7 @@ nnoremap <leader>gd :YcmCompleter GoToDefinition<CR>
 " nnoremap <BS> <c-o>
 nnoremap <F10> :YcmCompleter GoTo<CR>
 " let g:ycm_extra_conf_globlist = ['~/dev/*','!~/*']
-let g:ycm_global_ycm_extra_conf =$VIM.'/tools/ycmconf/tdmgcc_ycm_extra_conf.py'
+" let g:ycm_global_ycm_extra_conf =$VIM.'/tools/ycmconf/tdmgcc_ycm_extra_conf.py'
 command! -complete=customlist,SetYCMParas -nargs=?  SetYCM call SetYCM(<q-args>)
 fun SetYCMParas(A,L,P)
     let paralist = ["tdmgcc", "msys", "msvc", "qtmsvc", "qtmingw"]
@@ -1206,7 +1356,7 @@ endfunction
 " 允许 vim 加载 .ycm_extra_conf.py 文件,不再提示
 let g:ycm_confirm_extra_conf=0
 " Note that YCM's diagnostics UI is only supported for C-family languages.
-let g:ycm_show_diagnostics_ui = 1
+let g:ycm_show_diagnostics_ui = 0
 " 补全功能在注释中同样有效
 let g:ycm_complete_in_comments=1
 " 开启 YCM 基于标签引擎
@@ -1254,7 +1404,8 @@ let g:UltiSnipsUsePythonVersion = 3
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
-" let g:UltiSnipsSnippetsDir= $VIM . "/vimfiles/plugged/vim-snippets/UltiSnips"
+let g:UltiSnipsSnippetsDir= $VIM . "/tools/UltiSnips"
+let g:UltiSnipsSnippetDirectories=["UltiSnips"]
 " ------------------------------------------------------------------
 " ------------------------------------------------------------------
 let g:snips_author = g:ex_usr_name
@@ -1266,7 +1417,6 @@ fun! GetSnipsInCurrentScope()
     endfor
     return snips
 endf 
-
 
 " DISABLE: Slow to open big css file
 
@@ -1309,9 +1459,9 @@ function g:Exvim_post_init()
         " let g:ex_error_file = './error.err'
         call ex#hint("No project name, Use ./ .")
     else
-        let g:ex_project_exdir = './.exvim.'.g:ex_project_name
+        let g:ex_project_exdir = './'.g:ex_dir_prefix.'.'.g:ex_project_name
         let g:ex_qfix_file = g:ex_project_exdir.'/error.qfix'
-        let g:ex_filenametags =fnameescape(g:ex_project_cwd.'/.exvim.'.g:ex_project_name.'/filenametags')
+        let g:ex_filenametags =fnameescape(g:ex_project_cwd.'/'.g:ex_dir_prefix.'.'.g:ex_project_name.'/filenametags')
         " let g:ex_error_file = g:ex_project_exdir.'/error.err'
     endif
 
@@ -1323,7 +1473,7 @@ function g:Exvim_post_init()
         for sub_project in sub_project_refs
             let sub_cwd = fnamemodify(sub_project, ":p:h")
             let sub_name= fnamemodify(sub_project, ":t:r")
-            let sub_folder = fnameescape(sub_cwd.'/.exvim.'.sub_name)
+            let sub_folder = fnameescape(sub_cwd.'/'.g:ex_dir_prefix.'.'.sub_name)
             let g:ex_filenametags .= ','.fnameescape(sub_folder.'/filenametags')
             let &tags .= ','.fnameescape(sub_folder.'/tags')
         endfor
@@ -1332,7 +1482,7 @@ function g:Exvim_post_init()
     let project_maker = vimentry#get('project_maker')
     let g:ex_project_maker = vimentry#get('project_maker')
     if project_maker == ''
-        call ex#hint("Use default makeprg.")
+        " call ex#hint("Use default makeprg.")
     else
         let &makeprg = project_maker
     endif
@@ -1788,7 +1938,7 @@ nnoremap <silent> <leader>y3 :let @*=fnamemodify(bufname('%'),":p")<CR>
 "          filter method
 " nnoremap <F8> :nohlsearch<CR>
 " nnoremap <leader>/ :nohlsearch<CR>
-nnoremap <silent> <leader><leader>/ :let @/=""<CR>
+nnoremap <silent> <leader>/ :let @/=""<CR>
 nnoremap <F8> :let @/=""<CR>
 
 " map Ctrl-Tab to switch window
