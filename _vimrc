@@ -81,7 +81,7 @@ if WINDOWS()
     let g:ex_tools_path = g:exvim_custom_path.'/tools/'
 endif
 let g:ex_usr_name = "yang"
-let g:ex_dir_prefix = 'exvim'
+let g:ex_dir_prefix = '.exvim'
 " let g:mapleader=","
 let g:mapleader="\<Space>"
 
@@ -550,7 +550,8 @@ endfunction
 " autocmd! VimEnter * FufPrepare
 nnoremap <silent><C-F10> :FufPrepare<cr>
 if has('win32') || has('win64')
-    let g:fuf_coveragefile_external_cmd = 'es.exe'
+    " let g:fuf_coveragefile_external_cmd = 'es.exe'
+    let g:fuf_coveragefile_external_cmd = 'fd -t f'
 else
     let g:fuf_coveragefile_external_cmd = 'fd -t f'
 endif
@@ -611,6 +612,8 @@ nnoremap <silent> <A-T>      :FufBufferTagAll<CR>
 nnoremap <silent> <A-e>      :FufLine<CR>
 nnoremap <silent> <leader>fl :FufLine<CR>
 nnoremap <silent> <A-f>      :FufCoverageFile<CR>
+" nnoremap <silent> <A-F>      FufRenewCache<CR>:FufCoverageFile<CR>
+nnoremap <silent> <A-F>      FufRenewCache<CR>
 nnoremap <silent> <leader>fd :FufDir<CR>
 nnoremap <silent> <leader>mr :FufMruFile<CR>
 nnoremap <silent> <leader>:  :FufMruCmd<CR>
@@ -767,8 +770,9 @@ Plug 'fedorenchik/qt-support.vim'
 " ------------------------------------------------------------------
 Plug 'cpiger/vim-rooter'
 " ------------------------------------------------------------------
-" let g:rooter_manual_only = 1
+let g:rooter_manual_only = 1
 let g:rooter_silent_chdir = 1
+let g:rooter_load_gtags = 0 "cause frequently call vimrun.exe
 let g:rooter_patterns = ['.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/', '.ycm_extra_conf.py', '.qmake.stash'] 
 " ------------------------------------------------------------------
 Plug 'vim-scripts/sketch.vim'
@@ -1197,8 +1201,6 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'ryanoasis/vim-devicons'
 " ------------------------------------------------------------------
 Plug 'sheerun/vim-polyglot'
-" ------------------------------------------------------------------
-Plug 'Shougo/vimproc.vim'
 " ------------------------------------------------------------------
 " Plug 'peterhoeg/vim-qml'
 " ------------------------------------------------------------------
