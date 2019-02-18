@@ -36,15 +36,23 @@ import ycm_core
 # compilation database set (by default, one is not set).
 # CHANGE THIS LIST OF FLAGS. YES, THIS IS THE DROID YOU HAVE BEEN LOOKING FOR.
 flags = [
-    #'-Wall',
-    '-D_NOEXCEPT=throw()',
-    '-D_NOEXCEPT_OP=throw()',
-    '-D__CLR_OR_THIS_CALL=__cdecl',
-    '-D__GNUC__=5',
-    '-D__GNUC_MINOR__=3',
-    '-D__GNUC_PATCHLEVEL__=0',
-    '-DNDEBUG',
-    '--target=x86_64-w64-mingw32',
+    '-x', 'c',
+    '-x', 'c++',
+    '-std=c++14',
+    '-stdlib=libc++',
+    '-target x86_64-w64-mingw32',
+
+    '-D__GNUC__=8',
+    '-D__GNUC_MINOR__=2',
+    '-D__GNUC_PATCHLEVEL__=1',
+
+    '-D__STRICT_ANSI__',
+    #'-D_NOEXCEPT=throw()',
+    #'-D_NOEXCEPT_OP=throw()',
+    #'-D__CLR_OR_THIS_CALL=__cdecl',
+
+    #  '-DNDEBUG',
+
     # You 100% do NOT need -DUSE_CLANG_COMPLETER in your flags; only the YCM
     # source code needs it.
     #  '-DUSE_CLANG_COMPLETER',
@@ -58,33 +66,25 @@ flags = [
     # language that the files to be compiled are written in. This is mostly
     # relevant for c++ headers.
     # For a C project, you would set this to 'c' instead of 'c++'.
-    '-std=c++11',
-    '-stdlib=libc++',
-    '-Wno-deprecated-declarations',
-    '-Wno-disabled-macro-expansion',
-    '-Wno-float-equal',
-    '-Wno-c++98-compat',
-    '-Wno-c++98-compat-pedantic',
-    '-Wno-global-constructors',
-    '-Wno-exit-time-destructors',
-    '-Wno-missing-prototypes',
-    '-Wno-padded',
-    '-Wno-c++11-extensions',
-    '-x', 'c',
-    '-x', 'c++',
-    '-isystem', 'D:/msys64/mingw64/include',
-    '-isystem', 'D:/msys64/mingw64/x86_64-w64-mingw32/include',
-    '-isystem', 'D:/msys64/mingw64/include/c++/7.3.0',
-    '-isystem', 'D:/msys64/mingw64/include/c++/7.3.0/x86_64-w64-mingw32',
-    #  '-isystem', 'D:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/7.3.0/include',
-    #  '-isystem', 'D:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/7.3.0/include/ssp',
-    #  
-    #  '-I', '.',
-    #  '-DWIN32',
+    #
+    '-isystem', '/d/msys64/mingw64/include',
+    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include',
+    '-isystem', '/d/msys64/mingw64/include/c++/8.2.1',
+    '-isystem', '/d/msys64/mingw64/include/c++/8.2.1/x86_64-w64-mingw32',
+
+    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include',
+    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/ddk',
+    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/gdiplus',
+    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/GL',
+    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/psdk_inc',
+    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/sdks',
+    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/sec_api',
+    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/sys',
+    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/wrl',
+
+    '-I', '.',
+    '-DWIN32',
     #  '-D_WINDOWS',
-    #  '-D_USE_MYSQL_',
-    #  '-D_NOT_USE_SPDLOG_',
-    #  '-D_INC_STDAFX_H_',
 ]
 
 # Clang automatically sets the '-std=' flag to 'c++14' for MSVC 2015 or later,

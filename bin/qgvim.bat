@@ -1,2 +1,2 @@
-set PATH=D:\Qt\Qt5.9.6\5.9.6\msvc2015\bin;%PATH%
+set PATH=D:\Qt\Qt5.12.1\5.12.1\msvc2017\bin;%PATH%
 D:\exVim\vim81\gvim.exe  %*
