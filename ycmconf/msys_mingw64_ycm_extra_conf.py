@@ -38,7 +38,7 @@ import ycm_core
 flags = [
     '-x', 'c',
     '-x', 'c++',
-    '-std=c++14',
+    '-std=c++11',
     '-stdlib=libc++',
     '-target x86_64-w64-mingw32',
 
@@ -51,7 +51,7 @@ flags = [
     #'-D_NOEXCEPT_OP=throw()',
     #'-D__CLR_OR_THIS_CALL=__cdecl',
 
-    #  '-DNDEBUG',
+    '-DNDEBUG',
 
     # You 100% do NOT need -DUSE_CLANG_COMPLETER in your flags; only the YCM
     # source code needs it.
@@ -67,24 +67,21 @@ flags = [
     # relevant for c++ headers.
     # For a C project, you would set this to 'c' instead of 'c++'.
     #
-    '-isystem', '/d/msys64/mingw64/include',
-    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include',
-    '-isystem', '/d/msys64/mingw64/include/c++/8.2.1',
-    '-isystem', '/d/msys64/mingw64/include/c++/8.2.1/x86_64-w64-mingw32',
+    '-isystem', 'D:/msys64/mingw64/include',
+    '-isystem', 'D:/msys64/mingw64/include/c++/8.2.1',
+    '-isystem', 'D:/msys64/mingw64/include/c++/8.2.1/x86_64-w64-mingw32',
 
-    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include',
-    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/ddk',
-    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/gdiplus',
-    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/GL',
-    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/psdk_inc',
-    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/sdks',
-    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/sec_api',
-    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/sys',
-    '-isystem', '/d/msys64/mingw64/x86_64-w64-mingw32/include/wrl',
+    '-isystem', 'D:/msys64/mingw64/x86_64-w64-mingw32/include',
+    '-isystem', 'D:/msys64/mingw64/x86_64-w64-mingw32/include/ddk',
+    '-isystem', 'D:/msys64/mingw64/x86_64-w64-mingw32/include/gdiplus',
+    '-isystem', 'D:/msys64/mingw64/x86_64-w64-mingw32/include/GL',
+    '-isystem', 'D:/msys64/mingw64/x86_64-w64-mingw32/include/psdk_inc',
+    '-isystem', 'D:/msys64/mingw64/x86_64-w64-mingw32/include/sdks',
+    '-isystem', 'D:/msys64/mingw64/x86_64-w64-mingw32/include/sec_api',
+    '-isystem', 'D:/msys64/mingw64/x86_64-w64-mingw32/include/sys',
+    '-isystem', 'D:/msys64/mingw64/x86_64-w64-mingw32/include/wrl',
 
     '-I', '.',
-    '-DWIN32',
-    #  '-D_WINDOWS',
 ]
 
 # Clang automatically sets the '-std=' flag to 'c++14' for MSVC 2015 or later,

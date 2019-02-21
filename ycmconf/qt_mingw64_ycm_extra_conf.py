@@ -18,6 +18,10 @@ flags = [
     '-stdlib=libc++',
     '-target x86_64-w64-mingw32',
 
+    #  '-Wall'
+    #  '-Werror',
+    '-w',
+
     '-D__GNUC__=7',
     '-D__GNUC_MINOR__=3',
     '-D__GNUC_PATCHLEVEL__=0',

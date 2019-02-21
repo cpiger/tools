@@ -48,7 +48,8 @@ if WINDOWS()
         set termencoding=cp850
         " Let Vim use utf-8 internally, because many scripts require this
         set encoding=utf-8
-        setglobal fileencoding=utf-8
+        " setglobal fileencoding=utf-8
+        set fileencoding=chinese
         " Windows has traditionally used cp1252, so it's probably wise to
         " fallback into cp1252 instead of eg. iso-8859-15.
         " Newer Windows files might contain utf-8 or utf-16 LE so we might
@@ -59,6 +60,7 @@ if WINDOWS()
 else
     " set default encoding to utf-8
     set encoding=utf-8
+    set fileencoding=utf-8
     set termencoding=utf-8
 endif
 scriptencoding utf-8
@@ -149,9 +151,9 @@ Plug 'Shougo/context_filetype.vim'
 " ------------------------------------------------------------------
 " Plug 'kien/ctrlp.vim'
 " ------------------------------------------------------------------
-let g:ctrlp_working_path_mode = ''
-let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:10,results:10'
-nnoremap <unique> <leader>bs :CtrlPBuffer<CR>
+" let g:ctrlp_working_path_mode = ''
+" let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:10,results:10'
+" nnoremap <unique> <leader>bs :CtrlPBuffer<CR>
 " ------------------------------------------------------------------
 Plug 'cpiger/DirDiff.vim'       
 " ------------------------------------------------------------------
@@ -232,6 +234,7 @@ nnoremap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
 nnoremap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
 nnoremap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
 " ------------------------------------------------------------------
+Plug 'cpiger/ex-macrohl'
 Plug 'cpiger/ex-easyhl'
 " ------------------------------------------------------------------
 "  Desc:
@@ -310,6 +313,7 @@ function Exec_3G()
     endif 
 endfunction
 autocmd BufReadPost,BufAdd,BufCreate,BufWinEnter,WinEnter __Tag_List__,__Tagbar__.1 call Exec_3G()
+" autocmd VimEnter * silent GtagsCscope
 autocmd CursorMoved __Tag_List__,__Tagbar__.1 call Exec_3G()
 " ------------------------------------------------------------------
 Plug 'cpiger/ex-project'
@@ -547,17 +551,18 @@ function GotoMainEditBuffer()
     endfor
 endfunction
 
-" autocmd! VimEnter * FufPrepare
-nnoremap <silent><C-F10> :FufPrepare<cr>
 if has('win32') || has('win64')
     " let g:fuf_coveragefile_external_cmd = 'es.exe'
     let g:fuf_coveragefile_external_cmd = 'fd -t f'
 else
     let g:fuf_coveragefile_external_cmd = 'fd -t f'
 endif
-let g:fuf_coveragefile_exclude = '\v\~$|\.(o|exe|dll|bak|orig|swp)$|(^|[/\\])\.(hg|git|bzr|exvim.*)($|[/\\])'
-" let g:fuf_keySwitchMatching = '<C-\><C-\>'
-let g:fuf_keySwitchMatching = '<C-Tab>'
+let g:fuf_cmd_prefix = 'F'
+let g:fuf_coveragefile_exclude = '\v\~$|\.(o|exe|dll|bak|orig|swp|ilk|pdb|lib|exp|user)$|(GPATH|GRTAGS|GTAGS|macrohl)$|(^|[/\\])\.(hg|git|bzr|exvim.*)($|[/\\])'
+  let g:fuf_ignoreCase = 1
+  " let g:fuf_ignoreCase = 0
+let g:fuf_keySwitchMatching = '<C-\><C-\>'
+" let g:fuf_keySwitchMatching = '<C-Tab>'
 " let g:fuf_patternSeparator = ';'
 let g:fuf_patternSeparator = ' '
 let g:fuf_previewHeight = 0
@@ -570,64 +575,43 @@ let g:fuf_enumeratingLimit = 50
 " let g:fuf_splitPathMatching = 1
 " let g:fuf_promptHighlight = 'Question'
 " let g:fuf_fuzzyRefining = 0
-command FFileWithCurrentBufferDir      FufFileWithCurrentBufferDir     
-command FFileWithFullCwd               FufFileWithFullCwd              
-command FFile                          FufFile                         
-command FCoverageFileChange            FufCoverageFileChange           
-command FCoverageFileRegister          FufCoverageFileRegister         
-command FDirWithCurrentBufferDir       FufDirWithCurrentBufferDir      
-command FDirWithFullCwd                FufDirWithFullCwd               
-command FDir                           FufDir                          
-command FMruFile                       FufMruFile                      
-command FMruFileInCwd                  FufMruFileInCwd                 
-command FMruCmd                        FufMruCmd                       
-command FBookmarkFile                  FufBookmarkFile                 
-command FBookmarkFileAdd               FufBookmarkFileAdd              
-command FBookmarkFileAddAsSelectedText FufBookmarkFileAddAsSelectedText
-command FBookmarkDir                   FufBookmarkDir                  
-command FBookmarkDirAdd                FufBookmarkDirAdd               
-command FTag                           FufTag                          
-command FTagWithCursorWord             FufTagWithCursorWord           
-command FBufferTag                     FufBufferTag                    
-command FBufferTagWithSelectedText     FufBufferTagWithSelectedText    
-command FBufferTagAll                  FufBufferTagAll                 
-command FBufferTagAllWithSelectedText  FufBufferTagAllWithSelectedText 
-command FTaggedFile                    FufTaggedFile                   
-command FJumpList                      FufJumpList                     
-command FChangeList                    FufChangeList                   
-command FQuickfix                      FufQuickfix                     
-command FLine                          FufLine                         
-command FHelp                          FufHelp                         
-command FEditDataFile                  FufEditDataFile                 
-command FRenewCache                    FufRenewCache                   
-command FTaggedFileExVim               FufTaggedFileExVim
 
-noremap <silent> <S-F8> :FufRenewCache<CR>
+noremap <silent> <S-F8> :FRenewCache<CR>
 let g:fuf_taggedfile_cache_dir = '~/.vim-fuf-cache/taggedfile'
-noremap  <silent> <leader>ag :FufAg <C-r>=expand('<cword>')<CR><CR>
-nnoremap <silent> <leader>fb :FufBuffer<CR>
-nnoremap <silent> <A-b>      :FufBuffer<CR>
-nnoremap <silent> <A-t>      :FufBufferTag<CR>
-nnoremap <silent> <A-T>      :FufBufferTagAll<CR>
-nnoremap <silent> <A-e>      :FufLine<CR>
-nnoremap <silent> <leader>fl :FufLine<CR>
-nnoremap <silent> <A-f>      :FufCoverageFile<CR>
-" nnoremap <silent> <A-F>      FufRenewCache<CR>:FufCoverageFile<CR>
-nnoremap <silent> <A-F>      FufRenewCache<CR>
-nnoremap <silent> <leader>fd :FufDir<CR>
-nnoremap <silent> <leader>mr :FufMruFile<CR>
-nnoremap <silent> <leader>:  :FufMruCmd<CR>
+
+function! GetAllVimCommands()
+    redir => commands
+    silent command
+    redir END
+    return map((split(commands, "\n")[3:]),
+                \      '":" . matchstr(v:val, ''^....\zs\S*'')')
+endfunction
+command! -range -bang -narg=? FCmd :call fuf#givencmd#launch('', 0, '>Command>', GetAllVimCommands())
+nnoremap <silent> <A-c> :FCmd<CR>
+nnoremap <silent> <leader>fc :FCmd<CR>
+
+noremap  <silent> <leader>ag :FAg <C-r>=expand('<cword>')<CR><CR>
+nnoremap <silent> <leader>fb :FBuffer<CR>
+nnoremap <silent> <A-b>      :FBuffer<CR>
+nnoremap <silent> <A-t>      :FBufferTag<CR>
+nnoremap <silent> <A-T>      :FBufferTagAll<CR>
+nnoremap <silent> <A-e>      :FLine<CR>
+nnoremap <silent> <leader>fl :FLine<CR>
+nnoremap <silent> <A-f>      :FCoverageFile<CR>
+nnoremap <silent> <A-F>      :FRenewCache<CR>:FufCoverageFile<CR>
+nnoremap <silent> <leader>fd :FDir<CR>
+nnoremap <silent> <leader>mr :FMruFile<CR>
+nnoremap <silent> <leader>:  :FMruCmd<CR>
 function! FufTaggedFile_exVim(args)
     let project_name = vimentry#get('project_name')
     if project_name == ''
         call ex#error("No exvim project.")
         return
     endif
-    exe "FufTaggedFile ".a:args
+    exe "FTaggedFile ".a:args
 endfunction
-command! -nargs=* -complete=file FufTaggedFileExVim call FufTaggedFile_exVim(<q-args>)
-nnoremap <silent><leader>tf :FufTaggedFileExVim<cr>
-nnoremap <silent><A-F> :FufTaggedFileExVim<cr>
+command! -nargs=* -complete=file FTaggedFileExVim call FufTaggedFile_exVim(<q-args>)
+nnoremap <silent><leader>tf :FTaggedFileExVim<cr>
 " ------------------------------------------------------------------
 Plug 'junegunn/fzf', {'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -772,8 +756,9 @@ Plug 'cpiger/vim-rooter'
 " ------------------------------------------------------------------
 let g:rooter_manual_only = 1
 let g:rooter_silent_chdir = 1
+let g:rooter_change_directory_for_non_project_files = 'current'
 let g:rooter_load_gtags = 0 "cause frequently call vimrun.exe
-let g:rooter_patterns = ['.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/', '.ycm_extra_conf.py', '.qmake.stash'] 
+let g:rooter_patterns = ['.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/', '.ycm_extra_conf.py', '.qmake.stash', 'Rooter'] 
 " ------------------------------------------------------------------
 Plug 'vim-scripts/sketch.vim'
 " ------------------------------------------------------------------
@@ -1198,8 +1183,6 @@ let g:vim_markdown_initial_foldlevel=9999
 " ------------------------------------------------------------------
 Plug 'terryma/vim-multiple-cursors'
 " ------------------------------------------------------------------
-Plug 'ryanoasis/vim-devicons'
-" ------------------------------------------------------------------
 Plug 'sheerun/vim-polyglot'
 " ------------------------------------------------------------------
 " Plug 'peterhoeg/vim-qml'
@@ -1255,7 +1238,8 @@ au FileType rst command! W call exUtility#SphinxMake('html')
 let g:vimwiki_camel_case = 0
 let g:vimwiki_hl_headers = 1
 " ------------------------------------------------------------------
-Plug 'cpiger/visual_studio.vim'
+" call python2, will block python3 for ultisnip
+" Plug 'cpiger/visual_studio.vim' 
 " ------------------------------------------------------------------
 Plug 'othree/xml.vim'
 " ------------------------------------------------------------------
@@ -1270,7 +1254,7 @@ Plug 'sukima/xmledit'
 "  Desc: ultisnips: invoke by 
 "  Desc: vim-snippets: invoke by 
 " ------------------------------------------------------------------
-Plug 'sirver/ultisnips', { 'on': [] }
+Plug 'cpiger/ultisnips', { 'on': [] }
 " ------------------------------------------------------------------
 Plug 'rdnetto/YCM-Generator', {'on': 'YcmGenerateConfig'}
 " ------------------------------------------------------------------
@@ -1278,21 +1262,48 @@ Plug 'honza/vim-snippets'
 " ------------------------------------------------------------------
 Plug 'Valloric/YouCompleteMe', { 'on': [] }
 " ------------------------------------------------------------------
-let g:ycm_cache_omnifunc = 0
-func ToggleYCM()
-    let g:ycm_auto_trigger = !g:ycm_auto_trigger
-    if 1 == g:ycm_auto_trigger
-        call ex#hint("Turn on YCM.")
-    else
-        call ex#hint("Turn off YCM.")
-    endif
-endf
-nnoremap <c-f8>  :call ToggleYCM()<CR>
 augroup load_us_ycm
     autocmd!
-    autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
+    autocmd InsertEnter *\(__FUF__\)\@<! call plug#load('ultisnips', 'YouCompleteMe')
                 \| autocmd! load_us_ycm
 augroup END
+let g:EclimCompletionMethod = 'omnifunc'  "for java
+" 允许 vim 加载 .ycm_extra_conf.py 文件,不再提示
+let g:ycm_confirm_extra_conf=0
+" Note that YCM's diagnostics UI is only supported for C-family languages.
+let g:ycm_show_diagnostics_ui = 1
+" 补全功能在注释中同样有效
+let g:ycm_complete_in_comments=1
+" 开启 YCM 基于标签引擎
+let g:ycm_collect_identifiers_from_tags_files=1
+let g:ycm_disable_for_files_larger_than_kb = 5000
+" 补全内容不以分割子窗口形式出现,只显示补全列表
+set completeopt-=preview
+let g:ycm_auto_trigger = 1
+" 从第一个键入字符就开始罗列匹配项
+let g:ycm_min_num_of_chars_for_completion=2
+" 禁止缓存匹配项,每次都重新生成匹配项
+let g:ycm_cache_omnifunc=1
+let g:ycm_use_ultisnips_completer = 1
+" 语法关键字补全
+let g:ycm_seed_identifiers_with_syntax=1
+" let g:ycm_key_invoke_completion = '<M-;>'  
+let g:ycm_key_invoke_completion = '<M-.>'  
+let g:ycm_filetype_whitelist = { '*': 1 }
+" \ 'java' : 1,
+let g:ycm_filetype_blacklist = {
+            \ 'tagbar' : 1,
+            \ 'qf' : 1,
+            \ 'notes' : 1,
+            \ 'markdown' : 1,
+            \ 'unite' : 1,
+            \ 'text' : 1,
+            \ 'vimwiki' : 1,
+            \ 'pandoc' : 1
+            \ }
+let g:ycm_filetype_specific_completion_to_disable = {
+      \ 'gitcommit': 1,
+      \}
 let g:ycm_keep_logfiles = 1
 let g:ycm_log_level = 'debug'
 let g:ycm_semantic_triggers =  {
@@ -1313,8 +1324,6 @@ let g:ycm_semantic_triggers =  {
             " \ 'cs,lua,javascript': ['re!\w{2}'],
             " \ }
 " ------------------------------------------------------------------
-" ------------------------------------------------------------------
-" let g:ycm_server_python_interpreter = 'D:/python35/python.exe'
 " ji jc jd
 nnoremap <leader>gt :YcmCompleter GoTo<CR>
 nnoremap <leader>gi :YcmCompleter GoToInclude<CR>
@@ -1323,9 +1332,9 @@ nnoremap <leader>gd :YcmCompleter GoToDefinition<CR>
 
 " nnoremap <BS> <c-o>
 nnoremap <F10> :YcmCompleter GoTo<CR>
+
 " let g:ycm_extra_conf_globlist = ['~/dev/*','!~/*']
 " let g:ycm_global_ycm_extra_conf =$VIM.'/tools/ycmconf/tdmgcc_ycm_extra_conf.py'
-command! -complete=customlist,SetYCMParas -nargs=?  SetYCM call SetYCM(<q-args>)
 fun SetYCMParas(A,L,P)
     let paralist = ["tdmgcc", "msys", "msvc", "qtmsvc", "qtmingw"]
     let completelist = []
@@ -1354,43 +1363,17 @@ function! SetYCM(args)
         return
     endif
 endfunction
+command! -complete=customlist,SetYCMParas -nargs=?  SetYCM call SetYCM(<q-args>)
 
-" 允许 vim 加载 .ycm_extra_conf.py 文件,不再提示
-let g:ycm_confirm_extra_conf=0
-" Note that YCM's diagnostics UI is only supported for C-family languages.
-let g:ycm_show_diagnostics_ui = 0
-" 补全功能在注释中同样有效
-let g:ycm_complete_in_comments=1
-" 开启 YCM 基于标签引擎
-let g:ycm_collect_identifiers_from_tags_files=1
-let g:ycm_disable_for_files_larger_than_kb = 5000
-" 引入 C++ 标准库 tags
-" set tags+=/data/misc/software/misc./vim/stdcpp.tags
-" YCM 集成 OmniCppComplete 补全引擎,设置其快捷键
-" inoremap <leader>; <C-x><C-o>
-" 补全内容不以分割子窗口形式出现,只显示补全列表
-set completeopt-=preview
-let g:ycm_auto_trigger = 1
-" 从第一个键入字符就开始罗列匹配项
-let g:ycm_min_num_of_chars_for_completion=2
-" 禁止缓存匹配项,每次都重新生成匹配项
-let g:ycm_cache_omnifunc=0
-" 语法关键字补全
-let g:ycm_seed_identifiers_with_syntax=1
-" let g:ycm_key_invoke_completion = '<M-;>'  
-let g:ycm_key_invoke_completion = '<M-.>'  
-let g:ycm_filetype_whitelist = { '*': 1 }
-" \ 'java' : 1,
-let g:ycm_filetype_blacklist = {
-            \ 'tagbar' : 1,
-            \ 'qf' : 1,
-            \ 'notes' : 1,
-            \ 'markdown' : 1,
-            \ 'unite' : 1,
-            \ 'text' : 1,
-            \ 'vimwiki' : 1,
-            \ 'pandoc' : 1
-            \ }
+func ToggleYCM()
+    let g:ycm_auto_trigger = !g:ycm_auto_trigger
+    if 1 == g:ycm_auto_trigger
+        call ex#hint("Turn on YCM.")
+    else
+        call ex#hint("Turn off YCM.")
+    endif
+endf
+command YcmAutoTrigger call ToggleYCM()
 " ------------------------------------------------------------------
 "  ultisnips
 " ------------------------------------------------------------------
@@ -1406,9 +1389,12 @@ let g:UltiSnipsUsePythonVersion = 3
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
+if WINDOWS()
 let g:UltiSnipsSnippetsDir= $VIM . "/tools/UltiSnips"
+else
+    let g:UltiSnipsSnippetsDir= $HOME . "/.vim/tools/UltiSnips"
+endif
 let g:UltiSnipsSnippetDirectories=["UltiSnips"]
-" ------------------------------------------------------------------
 " ------------------------------------------------------------------
 let g:snips_author = g:ex_usr_name
 fun! GetSnipsInCurrentScope()
@@ -1421,7 +1407,6 @@ fun! GetSnipsInCurrentScope()
 endf 
 
 " DISABLE: Slow to open big css file
-
 " ------------------------------------------------------------------
 " ex-cref: invoke by <leader>cr
 " ------------------------------------------------------------------
@@ -1553,29 +1538,25 @@ set path=.
 " set path=.,/usr/include/*,, " where gf, ^Wf, :find will search 
 " set path=.,/usr/include/*,, " where gf, ^Wf, :find will search   default on Unix: ".,/usr/include,," 
 
-autocmd FileType c,cpp silent call SetENV_C()
-autocmd FileType java silent call SetENV_JAVA()
-autocmd FileType python silent call SetENV_PYTHON()
-
 " set tags+=./tags,./../tags,./**/tags,tags " which tags files CTRL-] will find 
-" set tags+=/opt/hisi-linux/x86-arm/.vimfiles.hsv200/tags
+
 function SetENV_C()
     set dictionary=$VIM/tools/dicts/cpp.dict
     set dictionary+=$VIM/tools/dicts/dict.dict
     set dictionary+=$VIM/tools/dicts/mfc.dict
-    " set tags+=D:/WinInc/tags
 endfunction
 function SetENV_JAVA()
     set dictionary=$HOME/.vim/tools/dicts/java.dict
     set dictionary+=$HOME/.vim/tools/dicts/dict.dict
-    " set tags+=/opt/jdk1.6.0_45/.vimfiles.jdk/tags
 endfunction
 function SetENV_PYTHON()
     set dictionary=$VIM/tools/dicts/python.dict
     set dictionary+=$VIM/tools/dicts/dict.dict
     set dictionary+=$VIM/vimfiles/plugged/pydiction/complete-dict
-    " set tags+=/opt/jdk1.6.0_45/.vimfiles.jdk/tags
 endfunction
+autocmd FileType c,cpp silent call SetENV_C()
+autocmd FileType java silent call SetENV_JAVA()
+autocmd FileType python silent call SetENV_PYTHON()
 let g:pydiction_location=$VIM.'\vimfiles/plugged/pydiction/complete-dict'
 
 " Redefine the shell redirection operator to receive both the stderr messages and stdout messages
@@ -1671,18 +1652,18 @@ set viminfo+=! " make sure it can save viminfo
 " --------------------------------------------------------------------------------- 
 " Desc: Visual
 " --------------------------------------------------------------------------------- 
-if has('gui_running')
-    set background=dark
-else
-    set background=dark
-    set t_Co=256 " make sure our terminal use 256 color
-    let g:solarized_termcolors = 256
-endif
-colorscheme solarized
 let g:molokai_original = 1
 if has('gui_running')
+    set background=dark
+    colorscheme solarized
     colorscheme molokai
+else
+    colorscheme default
+    hi CursorLine  ctermbg=5   cterm=none
 endif
+" hi Identifier term=underline cterm=bold ctermfg=11 guifg=#FD971F
+" hi vimVar     term=underline cterm=bold ctermfg=11 guifg=#FD971F
+
 set matchtime=0 " 0 second to show the matching paren ( much faster )
 set nu " show line number
 set scrolloff=0 " minimal number of screen lines to keep above and below the cursor 
@@ -1794,7 +1775,6 @@ set nofen                "Enable folding, I find it very useful
 " set foldmethod=syntax  fdn=6
 set foldmethod=manual
 set foldmethod=marker foldmarker={,} foldlevel=9999
-noremap <leader>zc zf%
 " --------------------------------------------------------------------------------- 
 " Desc: Search
 " --------------------------------------------------------------------------------- 
@@ -2197,9 +2177,6 @@ function! DoPrettyXML()
     silent %!xmllint --format  --encode UTF-8 -
 endfunction
 command! PrettyXML call DoPrettyXML()
-" au FileType xml exe ":silent 1,$!xmllint \"%\" --format --recover"
-" au FileType xml exe ":silent 1,$!tidy --input-xml true --indent yes 2>/dev/null"
-" au FileType xml exe ":silent 1,$!XMLLINT_INDENT='    ' xmllint --format --encode UTF-8 --recover - 2>/dev/null"
 
 function! GetBufferList()
     redir =>buflist
@@ -2352,27 +2329,9 @@ endf
 " au BufWinEnter * call PreviewDown() 
 
 command Astyle silent exec '%!astyle --style=kr'
-" nnoremap <leader>as :Astyle<cr>  
-" nnoremap <a-a> :Astyle<cr>  
 
 " 函数定义 ，] 返回历史列表用,tt   直接返回用bs
 " marker用,ms
-
-" let g:indentLine_color_term = 239,
-" let g:indentLine_color_gui = '#A4E57E' 
-" let g:indentLine_char = '┆'
-" let g:indentLine_char = '|'  
-
-" nn <leader>t1 1gt
-" nn <leader>t2 2gt
-" nn <leader>t3 3gt
-" nn <leader>t4 4gt
-" nn <leader>t5 5gt
-" nn <leader>t6 6gt
-" nn <leader>t7 7gt
-" nn <leader>t8 8gt
-" nn <leader>t9 9gt
-" nn <leader>t0 :tablast<CR>
 
 function! TabMessage(cmd)
     redir => message
@@ -2383,6 +2342,7 @@ function! TabMessage(cmd)
     set nomodified
 endfunction
 command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+command! -nargs=+ -complete=command TM call TabMessage(<q-args>)
 
 function! SuperESC()
     wincmd j
@@ -2390,20 +2350,10 @@ function! SuperESC()
     silent exec "cclose"
     silent exec "lclose"
     silent exec "pclose"
-    silent call VGdb_close_window()
 endfunction
 
 noremap <S-ESC> :silent call SuperESC()<CR>
 imap <S-ESC> <c-o>:silent call SuperESC()<CR>
-
-function! GetAllVimCommands()
-    redir => commands
-    silent command
-    redir END
-    return map((split(commands, "\n")[3:]),
-                \      '":" . matchstr(v:val, ''^....\zs\S*'')')
-endfunction
-nnoremap <silent> <a-A> :call fuf#givencmd#launch('', 0, 'Select CMD>', GetAllVimCommands())<CR>
 
 command! -bar Helptags :call plug#helptags()
 

@@ -18,6 +18,9 @@ flags = [
     '-x', 'c++',
     #  '-target i686-pc-windows-msvc19.00.24215.1',
     '-target x86_64-pc-windows-msvc',
+    #  '-Wall'
+    #  '-Werror',
+    '-w',
 
     '-EHsc',
     '-DWIN32',

@@ -17,6 +17,9 @@ flags = [
     '-x', 'c',
     '-x', 'c++',
     '-target i686-pc-windows-msvc19.00.24215.1',
+    #  '-Wall'
+    #  '-Werror',
+    '-w',
 
     #  vs2015
     #  '-isystem', 'D:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include',
